@@ -11,12 +11,13 @@ class GUI(Tk):
         self.title("Exome Analyzer")
         self.geometry("800x500")
 
-
-        self.level1 = ['FastQC']
-        self.level2 = ['BWA-MEM']
-        self.level3 = ['Picard']
-        self.level4 = ['Samtools', 'GATK', 'Freebayes']
-        self.level5 = ['Annovar']
+        self.level1 = [['FastQC', 'commands', 'input file' , 'output file' ]]
+        self.level2 = [['BWA-MEM', 'commands', 'input file', 'output file']]
+        self.level3 = [['Picard', 'commands', 'input file', 'output file']]
+        self.level4 = [['Samtools', 'commands', 'input file', 'output file'],
+                       ['GATK', 'commands', 'input file', 'output file'],
+                       ['Freebayes', 'commands', 'input file', 'output file']]
+        self.level5 = [['Annovar', 'commands', 'input file', 'output file']]
 
         self.submitButton = Button(master, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
         self.submitButton.grid()
@@ -40,7 +41,7 @@ class GUI(Tk):
 
             self.label = Label(self, text= "Step " + str(key))
             self.label.place(x=100, y=10 + (index+1) * 30)
-###cbox değerlerinin ayrı değerlendirilebilmesi!!!
+    ###cbox değerlerinin ayrı değerlendirilebilmesi!!!
             for item in self.dict[key] :
                 index += 1
                 if len(self.dict[key]) == 1 :
@@ -50,7 +51,7 @@ class GUI(Tk):
                     self.cbox1 = Checkbutton()
 
                 self.cbox1.place(x=150, y=10 + index * 30)
-                self.label1 = Label(self, text=item , relief=RAISED, bg="#009f9a")
+                self.label1 = Label(self, text=item[0] , relief=RAISED, bg="#009f9a")
                 self.label1.place(x=180, y=10 + index * 30)
 
 
@@ -65,6 +66,7 @@ class GUI(Tk):
         self.addToolScreen()
         #Tk.__init__(self, master)
         #self.grid()
+
     def addToolScreen(self):
         Tk.__init__(self)
         self.grid()
@@ -81,24 +83,22 @@ class GUI(Tk):
             self.arg = Label(self, text= arg + ": ")
             self.arg.place(x=100, y=90 + i*30)
             if i == 0:
-                self.inputName = Entry(self, width=50)
+                self.inputName = Entry(self, width=35)
                 self.inputName.place(x=250, y=90 + i * 30)
             elif i == 1:
-                self.inputName1 = Entry(self, width=50)
-                self.button = Button(self, text="Add Command", bg="#009fff")
-                self.button.place(x=600, y=90+ i*30)
+                self.inputName1 = Entry(self, width=35)
                 self.inputName1.place(x=250, y=90 + i * 30)
             elif i == 2:
-                self.inputName2 = Entry(self, width=50)
+                self.inputName2 = Entry(self, width=35)
                 self.inputName2.place(x=250, y=90 + i * 30)
             elif i == 3:
-                self.inputName3 = Entry(self, width=50)
+                self.inputName3 = Entry(self, width=35)
                 self.inputName3.place(x=250, y=90 + i * 30)
             elif i == 4:
-                self.inputName4 = Spinbox(self,from_=1, to=len(self.dict))
+                self.inputName4 = Spinbox(self,from_=1, to=len(self.dict), width= 2)
                 self.inputName4.place(x=250, y=90 + i * 30)
             else:
-                self.inputName5 = Entry(self, width=50)
+                self.inputName5 = Entry(self, width=35)
                 self.inputName5.place(x=250, y=90 + i * 30)
             i += 1
 
@@ -114,17 +114,15 @@ class GUI(Tk):
         self.addButton = Button(self, text="Add", width=15, command=self.addButtonClick)
         self.addButton.pack()
 
-
-
     def addButtonClick(self):
 
-        lev = int(self.inputName4.get())
-        self.dict[lev].append(self.inputName.get())
-        ##ilgili komutlar da arka tarafa atılacak
+        level = int(self.inputName4.get())
+        #tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
+        self.dict[level].append(self.inputName.get())
 
         self.labelframe1.destroy()
         self.addButton.destroy()
-        self.button.destroy()
+        #self.button.destroy()
         self.list.destroy()
         self.inputName.destroy()
 
