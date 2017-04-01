@@ -56,7 +56,7 @@ class GUI(Tk):
         self.button = Button(self, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
         self.button.place(x=180, y = 10 + (index +1)*30)
 
-        self.button2 = Button(self, text="Next \u279C", width=10, command=self.buttonClick, bg="#009fff")
+        self.button2 = Button(self, text="Next \u279C", width=10, bg="#009fff")
         self.button2.pack(side="bottom")
 
     def button2Click(self):
@@ -81,8 +81,8 @@ class GUI(Tk):
             self.arg.place(x=100, y=90 + i*30)
             if i == 1:
                 self.inputName = Entry(self, width=50)
-                self.button = Button(self, text="Add", bg="#009fff")
-                self.button.place(x=730, y=90+ i*30)
+                self.button = Button(self, text="Add Command", bg="#009fff")
+                self.button.place(x=600, y=90+ i*30)
             elif i == 4:
                 self.inputName = Spinbox(self,from_=1, to=5)
             else:
@@ -107,8 +107,12 @@ class GUI(Tk):
     def addButtonClick(self):
         self.labelframe1.destroy()
         self.addButton.destroy()
+        self.button.destroy()
+        self.list.destroy()
+        self.inputName.destroy()
 
         self.toolScreen()
+
 
 if __name__ == "__main__":
     guiFrame = GUI()
