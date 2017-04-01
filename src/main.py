@@ -81,8 +81,6 @@ class GUI(Tk):
             self.arg.place(x=100, y=90 + i*30)
             if i == 1:
                 self.inputName = Entry(self, width=50)
-                self.button = Button(self, text="Add", bg="#009fff")
-                self.button.place(x=730, y=90+ i*30)
             elif i == 4:
                 self.inputName = Spinbox(self,from_=1, to=5)
             else:
