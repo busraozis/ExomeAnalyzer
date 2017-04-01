@@ -84,7 +84,7 @@ class GUI(Tk):
                 self.button = Button(self, text="Add Command", bg="#009fff")
                 self.button.place(x=600, y=90+ i*30)
             elif i == 4:
-                self.inputName = Spinbox(self,from_=1, to=5)
+                self.inputName = Spinbox(self,from_=1, to=len(self.dict))
             else:
                 self.inputName = Entry(self, width=50)
             self.inputName.place(x=250, y=90 + i * 30)
@@ -105,6 +105,8 @@ class GUI(Tk):
 
 
     def addButtonClick(self):
+
+
         self.labelframe1.destroy()
         self.addButton.destroy()
         self.button.destroy()
