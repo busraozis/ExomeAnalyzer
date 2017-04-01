@@ -53,10 +53,10 @@ class GUI(Tk):
                 self.label1.place(x=180, y=10 + index * 30)
 
 
-        self.button = Button(self, text="Add new tool", width=25, command=self.button2Click, bg="#009fff")
+        self.button = Button(self, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
         self.button.place(x=180, y = 10 + (index +1)*30)
 
-        self.button2 = Button(self, text="Next \u279C", width=10, command=self.button2Click, bg="#009fff")
+        self.button2 = Button(self, text="Next \u279C", width=10, command=self.buttonClick, bg="#009fff")
         self.button2.pack(side="bottom")
 
     def button2Click(self):
@@ -74,40 +74,35 @@ class GUI(Tk):
         self.labelframe1 = LabelFrame(self, text="Add New Tool")
         self.labelframe1.pack(fill="both", expand="yes")
 
-        self.toolName = Label(self, text="Tool Name: ")
-        self.toolName.place(x=100, y=90)
-        self.inputName = Entry(self, width=40)
-        self.inputName.place(x=350, y = 90)
+        args = ['Tool Name', 'Commands', 'Input File Format', 'Output File Format', 'Step']
+        i = 0
+        for arg in args:
+            self.arg = Label(self, text= arg + ": ")
+            self.arg.place(x=100, y=90 + i*30)
+            if i == 1:
+                self.inputName = Entry(self, width=50)
+                self.button = Button(self, text="Add", bg="#009fff")
+                self.button.place(x=730, y=90+ i*30)
+            elif i == 4:
+                self.inputName = Spinbox(self,from_=1, to=5)
+            else:
+                self.inputName = Entry(self, width=50)
+            self.inputName.place(x=250, y=90 + i * 30)
+            i += 1
 
-        self.commLine = Label(self, text="Commands that will run the tool: ")
-        self.commLine.place(x=100, y=120)
-        self.inputArgs = Entry(self, width=40)
-        self.inputArgs.place(x=350, y=120)
-
-        self.inFormat = Label(self, text="Input File Format: ")
-        self.inFormat.place(x=100, y=150)
-        self.inInput = Entry(self, width=40)
-        self.inInput.place(x=350, y=150)
-
-        self.outFormat = Label(self, text="Output File Format: ")
-        self.outFormat.place(x=100, y=180)
-        self.outInput = Entry(self, width=40)
-        self.outInput.place(x=350, y=180)
-
-        self.level = Label(self, text="In which level does the tool work? ")
-        self.level.place(x=100, y=210)
-        self.scroll = Scrollbar(self)
-       # self.scroll.place(x=350, y=210)
-        self.scroll.pack()
-        self.list = Listbox(self, yscrollcommand = self.scroll.set)
-        for key in self.dict.keys() :
-            self.list.insert(END, "Level: "+ str(key))
-
+        self.list = Listbox(self, width= 50, height= 6)
+        self.list.insert(END, "Hint")
+        self.list.insert(END, "Step 1: Quality Control")
+        self.list.insert(END, "Step 2: Initial Alingment")
+        self.list.insert(END, "Step 3: Removing Duplicates")
+        self.list.insert(END, "Step 4: Recalibration, Calling and Filtering Variants")
+        self.list.insert(END, "Step 5: Annovar")
         self.list.pack()
-        self.scroll.config(command=self.list.yview)
 
         self.addButton = Button(self, text="Add", width=15, command=self.addButtonClick)
         self.addButton.pack()
+
+
 
     def addButtonClick(self):
         self.labelframe1.destroy()
