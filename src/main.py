@@ -1,5 +1,6 @@
 #simple gui
 from tkinter import *
+import  operator
 
 class GUI(Tk):
 
@@ -22,11 +23,18 @@ class GUI(Tk):
 
     def toolScreen(self):
         self.submitButton.destroy()
-        self.label1 = Label(self, text="1. FastQC", relief=RAISED, bg="#009f9a")
-        self.label1.place(x=150, y=150)
-        self.cbox1 = Checkbutton()
-        self.cbox1.place(x=220, y=150)
-        self.label2 = Label(self, text="2. BWA", relief=RAISED, bg="#009f9a")
+
+        dict = {'FastQC': 1, 'BWA-MEM': 2, 'Picard': 3, 'Samtools': 4, 'GATK': 4, 'Freebayes': 4 , 'Annovar': 5}
+
+
+        for key, value in dict.items() :
+            index = list(dict.keys()).index(key)
+            self.cbox1 = Checkbutton()
+            self.cbox1.place(x=150, y=10 + index * 30)
+            self.label1 = Label(self, text=key + " ", relief=RAISED, bg="#009f9a")
+            self.label1.place(x=180, y=10 + index * 30)
+
+        """self.label2 = Label(self, text="2. BWA", relief=RAISED, bg="#009f9a")
         self.label2.place(x=150, y=170)
         self.cbox2 = Checkbutton(state=DISABLED)
         self.cbox2.select()
@@ -52,7 +60,7 @@ class GUI(Tk):
         self.label7.place(x=150, y=270)
         self.cbox7 = Checkbutton(state=DISABLED)
         self.cbox7.select()
-        self.cbox7.place(x=220, y=270)
+        self.cbox7.place(x=220, y=270)"""
 
 
         self.button = Button(self, text="Add new tool", width=25, command=self.button2Click, bg="#009fff")
