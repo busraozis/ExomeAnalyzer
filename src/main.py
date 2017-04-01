@@ -11,6 +11,13 @@ class GUI(Tk):
         self.title("Exome Analyzer")
         self.geometry("800x500")
 
+
+        self.level1 = ['FastQC']
+        self.level2 = ['BWA-MEM']
+        self.level3 = ['Picard']
+        self.level4 = ['Samtools', 'GATK', 'Freebayes']
+        self.level5 = ['Annovar']
+
         self.submitButton = Button(master, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
         self.submitButton.grid()
         self.submitButton.pack()
@@ -26,20 +33,14 @@ class GUI(Tk):
         self.labelframe = LabelFrame(self, text="Select Tools")
         self.labelframe.pack(fill="both", expand="yes")
 
-        level1 = ['FastQC']
-        level2 = ['BWA-MEM']
-        level3 = ['Picard']
-        level4 = ['Samtools', 'GATK', 'Freebayes']
-        level5 = ['Annovar']
-
-        self.dict = {1: level1, 2: level2, 3: level3, 4: level4 , 5: level5}
+        self.dict = {1: self.level1, 2: self.level2, 3: self.level3, 4: self.level4 , 5: self.level5}
         index = 0
 
         for key in self.dict.keys() :
 
             self.label = Label(self, text= "Step " + str(key))
             self.label.place(x=100, y=10 + (index+1) * 30)
-
+###cbox değerlerinin ayrı değerlendirilebilmesi!!!
             for item in self.dict[key] :
                 index += 1
                 if len(self.dict[key]) == 1 :
@@ -79,15 +80,26 @@ class GUI(Tk):
         for arg in args:
             self.arg = Label(self, text= arg + ": ")
             self.arg.place(x=100, y=90 + i*30)
-            if i == 1:
+            if i == 0:
                 self.inputName = Entry(self, width=50)
+                self.inputName.place(x=250, y=90 + i * 30)
+            elif i == 1:
+                self.inputName1 = Entry(self, width=50)
                 self.button = Button(self, text="Add Command", bg="#009fff")
                 self.button.place(x=600, y=90+ i*30)
+                self.inputName1.place(x=250, y=90 + i * 30)
+            elif i == 2:
+                self.inputName2 = Entry(self, width=50)
+                self.inputName2.place(x=250, y=90 + i * 30)
+            elif i == 3:
+                self.inputName3 = Entry(self, width=50)
+                self.inputName3.place(x=250, y=90 + i * 30)
             elif i == 4:
-                self.inputName = Spinbox(self,from_=1, to=len(self.dict))
+                self.inputName4 = Spinbox(self,from_=1, to=len(self.dict))
+                self.inputName4.place(x=250, y=90 + i * 30)
             else:
-                self.inputName = Entry(self, width=50)
-            self.inputName.place(x=250, y=90 + i * 30)
+                self.inputName5 = Entry(self, width=50)
+                self.inputName5.place(x=250, y=90 + i * 30)
             i += 1
 
         self.list = Listbox(self, width= 50, height= 6)
@@ -106,6 +118,9 @@ class GUI(Tk):
 
     def addButtonClick(self):
 
+        lev = int(self.inputName4.get())
+        self.dict[lev].append(self.inputName.get())
+        ##ilgili komutlar da arka tarafa atılacak
 
         self.labelframe1.destroy()
         self.addButton.destroy()
