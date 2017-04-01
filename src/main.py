@@ -24,47 +24,37 @@ class GUI(Tk):
     def toolScreen(self):
         self.submitButton.destroy()
 
-        dict = {'FastQC': 1, 'BWA-MEM': 2, 'Picard': 3, 'Samtools': 4, 'GATK': 4, 'Freebayes': 4 , 'Annovar': 5}
+        self.labelframe = LabelFrame(self, text="Select Tools")
+        self.labelframe.pack(fill="both", expand="yes")
 
+        level1 = ['FastQC']
+        level2 = ['BWA-MEM']
+        level3 = ['Picard']
+        level4 = ['Samtools', 'GATK', 'Freebayes']
+        level5 = ['Annovar']
 
-        for key, value in dict.items() :
-            index = list(dict.keys()).index(key)
-            self.cbox1 = Checkbutton()
-            self.cbox1.place(x=150, y=10 + index * 30)
-            self.label1 = Label(self, text=key + " ", relief=RAISED, bg="#009f9a")
-            self.label1.place(x=180, y=10 + index * 30)
+        dict = {1: level1, 2: level2, 3: level3, 4: level4 , 5: level5}
+        index = 0
 
-        """self.label2 = Label(self, text="2. BWA", relief=RAISED, bg="#009f9a")
-        self.label2.place(x=150, y=170)
-        self.cbox2 = Checkbutton(state=DISABLED)
-        self.cbox2.select()
-        self.cbox2.place(x=220, y=170)
-        self.label3 = Label(self, text="3. Picard", relief=RAISED, bg="#009f9a")
-        self.label3.place(x=150, y=190)
-        self.cbox3 = Checkbutton(state=DISABLED)
-        self.cbox3.select()
-        self.cbox3.place(x=220, y=190)
-        self.label4 = Label(self, text="4. Samtools", relief=RAISED, bg="#009f9a")
-        self.label4.place(x=150, y=210)
-        self.cbox4 = Checkbutton()
-        self.cbox4.place(x=220, y=210)
-        self.label5 = Label(self, text="4. GATK", relief=RAISED, bg="#009f9a")
-        self.label5.place(x=150, y=230)
-        self.cbox5 = Checkbutton()
-        self.cbox5.place(x=220, y=230)
-        self.label6 = Label(self, text="4. FreeBayes", relief=RAISED, bg="#009f9a")
-        self.label6.place(x=150, y=250)
-        self.cbox6 = Checkbutton()
-        self.cbox6.place(x=220, y=250)
-        self.label7 = Label(self, text="5. Annovar", relief=RAISED, bg="#009f9a")
-        self.label7.place(x=150, y=270)
-        self.cbox7 = Checkbutton(state=DISABLED)
-        self.cbox7.select()
-        self.cbox7.place(x=220, y=270)"""
+        for key in dict.keys() :
+
+            self.label = Label(self, text= "Step " + str(key))
+            self.label.place(x=100, y=10 + (index+1) * 30)
+
+            for item in dict[key] :
+                index += 1
+                if len(dict[key]) == 1 :
+                    self.cbox1 = Checkbutton(state=DISABLED)
+                    self.cbox1.select()
+                else :
+                    self.cbox1 = Checkbutton()
+                self.cbox1.place(x=150, y=10 + index * 30)
+                self.label1 = Label(self, text=item , relief=RAISED, bg="#009f9a")
+                self.label1.place(x=180, y=10 + index * 30)
 
 
         self.button = Button(self, text="Add new tool", width=25, command=self.button2Click, bg="#009fff")
-        self.button.pack()
+        self.button.place(x=180, y = 10 + (index +1)*30)
 
         self.button2 = Button(self, text="Next \u279C", width=10, command=self.button2Click, bg="#009fff")
         self.button2.pack(side="bottom")
