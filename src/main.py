@@ -76,20 +76,3 @@ if __name__ == "__main__":
     guiFrame = GUI()
     guiFrame.mainloop()
 
-
-#create window
-#root = Tk()
-
-#modify root window
-#root.title("Exome Analyzer")
-#root.geometry("800x500")
-
-#self.but = Button(root, text="Start Simulation", width=25, command=self.buttonClick)
-#self.but.configure(bg = "#009f9a")
-#self.but.pack()
-
-#root.mainloop()
-
-
-
-
