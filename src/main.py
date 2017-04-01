@@ -7,13 +7,13 @@ class GUI(Tk):
         Tk.__init__(self, master)
         self.grid()
 
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+
         self.submitButton = Button(master, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
         self.submitButton.grid()
         self.submitButton.pack()
         self.submitButton.place(width=250, relx = 0.365, rely=0.5)
-
-        self.title("Exome Analyzer")
-        self.geometry("800x500")
 
 
     def buttonClick(self):
@@ -58,14 +58,20 @@ class GUI(Tk):
         self.button = Button(self, text="Add new tool", width=25, command=self.button2Click, bg="#009fff")
         self.button.pack()
 
-        self.button2 = Button(self, text="Next -->", width=10, command=self.button2Click, bg="#009fff")
+        self.button2 = Button(self, text="Next \u279C", width=10, command=self.button2Click, bg="#009fff")
         self.button2.pack(side="bottom")
 
     def button2Click(self):
         self.destroy()      ######################
-        Tk.__init__(self, master)
+        self.emptyScreen()
+        #Tk.__init__(self, master)
+        #self.grid()
+    def emptyScreen(self):
+        Tk.__init__(self)
         self.grid()
 
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
 
 
 if __name__ == "__main__":
