@@ -150,7 +150,8 @@ class GUI(Tk):
         #tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
 
         ##yeni eklenen tool'un adı tam gözükmüyor add tool ekranında!!!! sadece ilk harfi!!!!
-        self.dict[level].append(self.inputName.get())
+        if len(self.inputName.get()) != 0 :
+            self.dict[level].append(self.inputName.get())
 
 
         self.labelframe1.destroy()
