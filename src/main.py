@@ -1,5 +1,6 @@
 #simple gui
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
 import os
 
@@ -8,6 +9,9 @@ class GUI(Tk):
     def __init__(self,master=None):
         Tk.__init__(self, master)
         self.grid()
+
+        self.grid_columnconfigure(0, weight=5)
+        self.grid_rowconfigure(0, weight=1)
 
         self.title("Exome Analyzer")
         self.geometry("800x500")
@@ -23,10 +27,12 @@ class GUI(Tk):
                        ['Freebayes', 'commands', 'input file', 'output file']]
         self.level5 = [['Annovar', 'commands', 'input file', 'output file']]
 
-        self.submitButton = Button(master, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
-        self.submitButton.grid()
-        self.submitButton.pack()
-        self.submitButton.place(width=250, relx = 0.365, rely=0.5)
+        self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
+        self.submitButton.grid(column=0,row=0)
+
+
+        """self.submitButton.pack()
+        self.submitButton.place(width=250, relx = 0.365, rely=0.5)"""
 
 
     def buttonClick(self):
@@ -44,26 +50,28 @@ class GUI(Tk):
 
         for key in self.dict.keys() :
 
-            self.label = Label(self, text= "Step " + str(key))
+            self.label = Label(self.labelframe, text= "Step " + str(key))
+            #self.label.grid(column=0, row= index)
             self.label.place(x=100, y=10 + (index+1) * 30)
 
             for item in self.dict[key] :
                 index += 1
                 var = IntVar()
-                if len(self.dict[key]) == 1 :
-                    self.cbox1 = Checkbutton(state=DISABLED, variable=var)
+                if len(self.dict[key]) == 1 and key != 1 :
+                    self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
                     self.cbox1.select()
                 else :
-                    self.cbox1 = Checkbutton(variable=var)
+                    self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
                 self.checkboxes.append(var)
-
+                #self.cbox1.grid(column=1,row=index-1)
                 self.cbox1.place(x=150, y=10 + index * 30)
-                self.label1 = Label(self, text=item[0] , relief=RAISED, bg="#009f9a", width=25)
+                self.label1 = Label(self.labelframe, text=item[0] , relief=RAISED, bg="#009f9a", width=25)
+                #self.label1.grid(column=2,row=index-1)
                 self.label1.place(x=180, y=10 + index * 30)
 
 
-        self.button = Button(self, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
+        self.button = Button(self.labelframe, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
         self.button.place(x=180, y = 10 + (index +1)*30)
 
         self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
@@ -86,6 +94,8 @@ class GUI(Tk):
         self.progressDialog.geometry("800x500")
         self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
         self.info.place(x=10, y=20)
+        self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
+        self.progress.place(x=50, y=50)
         """for i in range(len(self.checkboxes)):
             self.dummy = Label(self.progressDialog, text=self.checkboxes[i].get())
             self.dummy.place(x=30, y=50+i*50)"""
@@ -104,6 +114,7 @@ class GUI(Tk):
         self.addToolScreen()
         #Tk.__init__(self, master)
         #self.grid()
+
 
     def addToolScreen(self):
         Tk.__init__(self)
