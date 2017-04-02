@@ -1,6 +1,7 @@
 #simple gui
 from tkinter import *
-import  operator
+from tkinter import filedialog
+import os
 
 class GUI(Tk):
 
@@ -10,6 +11,8 @@ class GUI(Tk):
 
         self.title("Exome Analyzer")
         self.geometry("800x500")
+
+        self.fileList = []
 
         self.level1 = [['FastQC', 'commands', 'input file' , 'output file' ]]
         self.level2 = [['BWA-MEM', 'commands', 'input file', 'output file']]
@@ -51,15 +54,23 @@ class GUI(Tk):
                     self.cbox1 = Checkbutton()
 
                 self.cbox1.place(x=150, y=10 + index * 30)
-                self.label1 = Label(self, text=item[0] , relief=RAISED, bg="#009f9a")
+                self.label1 = Label(self, text=item[0] , relief=RAISED, bg="#009f9a", width=25)
                 self.label1.place(x=180, y=10 + index * 30)
 
 
         self.button = Button(self, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
         self.button.place(x=180, y = 10 + (index +1)*30)
 
-        self.button2 = Button(self, text="Next \u279C", width=10, bg="#009fff")
+        self.button2 = Button(self, text="Next \u279C", width=10, bg="#009fff", command=self.clickForSelectFiles)
         self.button2.pack(side="bottom")
+
+    def clickForSelectFiles(self):
+        cwd = os.getcwd()
+        self.filename =  filedialog.askopenfilename(initialdir = cwd, title = "Choose your file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
+        self.fileList.append(self.filename)   ##seçilen dosyalar fileList listesinde!!
+
+        #for index in range(len(self.fileList)):
+         #   print(self.fileList[index])
 
     def button2Click(self):
         self.destroy()      ######################
@@ -118,7 +129,10 @@ class GUI(Tk):
 
         level = int(self.inputName4.get())
         #tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
+
+        ##yeni eklenen tool'un adı tam gözükmüyor add tool ekranında!!!! sadece ilk harfi!!!!
         self.dict[level].append(self.inputName.get())
+
 
         self.labelframe1.destroy()
         self.addButton.destroy()
