@@ -64,7 +64,7 @@ class GUI(Tk):
         self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
         self.button2.pack(side="bottom")
 
-        self.button3 = Button(self, text="Choose input files", bg = "#009000", command=self.clickForSelectFiles)
+        self.button3 = Button(self, text="Choose input files", bg = "#ffe7b5", command=self.clickForSelectFiles)
         self.button3.pack(side="bottom")
 
     def startSimulation(self):
