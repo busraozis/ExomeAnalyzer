@@ -13,6 +13,7 @@ class GUI(Tk):
         self.geometry("800x500")
 
         self.fileList = []
+        self.checkboxes = []
 
         self.level1 = [['FastQC', 'commands', 'input file' , 'output file' ]]
         self.level2 = [['BWA-MEM', 'commands', 'input file', 'output file']]
@@ -39,19 +40,23 @@ class GUI(Tk):
 
         self.dict = {1: self.level1, 2: self.level2, 3: self.level3, 4: self.level4 , 5: self.level5}
         index = 0
+        self.checkboxes.clear()
 
         for key in self.dict.keys() :
 
             self.label = Label(self, text= "Step " + str(key))
             self.label.place(x=100, y=10 + (index+1) * 30)
-    ###cbox değerlerinin ayrı değerlendirilebilmesi!!!
+
             for item in self.dict[key] :
                 index += 1
+                var = IntVar()
                 if len(self.dict[key]) == 1 :
-                    self.cbox1 = Checkbutton(state=DISABLED)
+                    self.cbox1 = Checkbutton(state=DISABLED, variable=var)
                     self.cbox1.select()
                 else :
-                    self.cbox1 = Checkbutton()
+                    self.cbox1 = Checkbutton(variable=var)
+
+                self.checkboxes.append(var)
 
                 self.cbox1.place(x=150, y=10 + index * 30)
                 self.label1 = Label(self, text=item[0] , relief=RAISED, bg="#009f9a", width=25)
@@ -81,6 +86,9 @@ class GUI(Tk):
         self.progressDialog.geometry("800x500")
         self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
         self.info.place(x=10, y=20)
+        """for i in range(len(self.checkboxes)):
+            self.dummy = Label(self.progressDialog, text=self.checkboxes[i].get())
+            self.dummy.place(x=30, y=50+i*50)"""
 
 
     def clickForSelectFiles(self):
