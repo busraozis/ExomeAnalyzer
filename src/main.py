@@ -15,6 +15,7 @@ class GUI(Tk):
 
         self.title("Exome Analyzer")
         self.geometry("800x500")
+        self.resizable(width=False, height=False)
 
         self.fileList = []
         self.checkboxes = []
@@ -52,7 +53,7 @@ class GUI(Tk):
 
             self.label = Label(self.labelframe, text= "Step " + str(key))
             #self.label.grid(column=0, row= index)
-            self.label.place(x=100, y=10 + (index+1) * 30)
+            self.label.place(x=200, y=50 + (index+1) * 30)
 
             for item in self.dict[key] :
                 index += 1
@@ -65,14 +66,15 @@ class GUI(Tk):
 
                 self.checkboxes.append(var)
                 #self.cbox1.grid(column=1,row=index-1)
-                self.cbox1.place(x=150, y=10 + index * 30)
-                self.label1 = Label(self.labelframe, text=item[0] , relief=RAISED, bg="#009f9a", width=25)
+                self.cbox1.place(x=250, y=50 + index * 30)
+                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
                 #self.label1.grid(column=2,row=index-1)
-                self.label1.place(x=180, y=10 + index * 30)
+                self.label1.place(x=280, y=50 + index * 30)
 
 
         self.button = Button(self.labelframe, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
-        self.button.place(x=180, y = 10 + (index +1)*30)
+        self.button.place(x=280, y = 50 + (index +1)*30)
+        self.button.place(x=280, y = 50 + (index +1)*30)
 
         self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
         self.button2.pack(side="bottom")
@@ -85,6 +87,7 @@ class GUI(Tk):
             self.popup = Tk()
             self.popup.title("Warning!")
             self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
             self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
             self.warning.place(x=10, y=20)
             return
@@ -92,6 +95,7 @@ class GUI(Tk):
         self.progressDialog = Tk()
         self.progressDialog.title("Simulation has started!")
         self.progressDialog.geometry("800x500")
+        self.progressDialog.resizable(width=False, height=False)
         self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
         self.info.place(x=10, y=20)
         self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
@@ -122,6 +126,7 @@ class GUI(Tk):
 
         self.title("Exome Analyzer")
         self.geometry("800x500")
+        self.resizable(width=False, height=False)
 
         self.labelframe1 = LabelFrame(self, text="Add New Tool")
         self.labelframe1.pack(fill="both", expand="yes")
