@@ -147,11 +147,10 @@ class GUI(Tk):
     def addButtonClick(self):
 
         level = int(self.inputName4.get())
-        #tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
+        tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
 
-        ##yeni eklenen tool'un adı tam gözükmüyor add tool ekranında!!!! sadece ilk harfi!!!!
         if len(self.inputName.get()) != 0 :
-            self.dict[level].append(self.inputName.get())
+            self.dict[level].append(tool)
 
 
         self.labelframe1.destroy()
