@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import os
+import time
 
 class GUI(Tk):
 
@@ -100,6 +101,18 @@ class GUI(Tk):
         self.info.place(x=10, y=20)
         self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
         self.progress.place(x=50, y=50)
+        self.ilerle()
+
+    def ilerle(self):
+        self.progress["value"] = self.progress["value"] + 1
+        if self.progress["value"] < 100:
+            # read more bytes after 100 ms
+            self.after(100, self.ilerle)
+
+        else:
+            self.finish = Label(self.progressDialog, text="Simulation finished successfully!\n Check output directory to see the result!")
+            self.finish.place(x=50, y=100)
+
         """for i in range(len(self.checkboxes)):
             self.dummy = Label(self.progressDialog, text=self.checkboxes[i].get())
             self.dummy.place(x=30, y=50+i*50)"""
