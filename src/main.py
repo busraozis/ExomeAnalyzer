@@ -61,12 +61,31 @@ class GUI(Tk):
         self.button = Button(self, text="Add new tool", width=10, command=self.button2Click, bg="#009fff")
         self.button.place(x=180, y = 10 + (index +1)*30)
 
-        self.button2 = Button(self, text="Next \u279C", width=10, bg="#009fff", command=self.clickForSelectFiles)
+        self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
         self.button2.pack(side="bottom")
+
+        self.button3 = Button(self, text="Choose input files", bg = "#009000", command=self.clickForSelectFiles)
+        self.button3.pack(side="bottom")
+
+    def startSimulation(self):
+        if len(self.fileList) == 0 :
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
+            self.warning.place(x=10, y=20)
+            return
+
+        self.progressDialog = Tk()
+        self.progressDialog.title("Simulation has started!")
+        self.progressDialog.geometry("800x500")
+        self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
+        self.info.place(x=10, y=20)
+
 
     def clickForSelectFiles(self):
         cwd = os.getcwd()
-        self.filename =  filedialog.askopenfilename(initialdir = cwd, title = "Choose your file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
+        self.filename =  filedialog.askopenfilename(initialdir = cwd, title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
         self.fileList.append(self.filename)   ##seçilen dosyalar fileList listesinde!!
 
         #for index in range(len(self.fileList)):
