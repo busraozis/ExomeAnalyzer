@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import os
+import subprocess
 import time
 
 class GUI(Tk):
@@ -31,6 +32,7 @@ class GUI(Tk):
 
         self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.buttonClick)
         self.submitButton.grid(column=0,row=0)
+
 
 
         """self.submitButton.pack()
@@ -202,4 +204,4 @@ class GUI(Tk):
 if __name__ == "__main__":
     guiFrame = GUI()
     guiFrame.mainloop()
-
+    subprocess.call(['ls']) #COMMAND LINE'A ULASMAMIZI SAGLAYACAK
