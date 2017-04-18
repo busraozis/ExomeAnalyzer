@@ -22,23 +22,25 @@ class GUI(Tk):
         self.vcfFiles =[]
         self.checkboxes = []
 
-        self.level1 = [['FastQC', 'commands', 'input file' , 'output file' ]]
-        self.level2 = [['BWA-MEM', 'commands', 'input file', 'output file']]
-        self.level3 = [['Picard', 'commands', 'input file', 'output file']]
-        self.level4 = [['Samtools', 'commands', 'input file', 'output file'],
-                       ['GATK', 'commands', 'input file', 'output file'],
-                       ['Freebayes', 'commands', 'input file', 'output file']]
-        self.level5 = [['Annovar', 'commands', 'input file', 'output file']]
+        self.level1 = [['FastQC','','commands', 'input file' , 'output file' ]]
+        self.level2 = [['BWA-MEM', '','commands', 'input file', 'output file']]
+        self.level3 = [['Picard','','commands', 'input file', 'output file']]
+        self.level4 = [['Samtools','', 'commands', 'input file', 'output file'],
+                       ['GATK', '','commands', 'input file', 'output file'],
+                       ['Freebayes','', 'commands', 'input file', 'output file']]
+        self.level5 = [['Annovar', '','commands', 'input file', 'output file']]
+        self.dict = {1: self.level1, 2: self.level2, 3: self.level3, 4: self.level4, 5: self.level5}
 
-
+        self.addTool = Button(self, text="Add new tool", width=25, command=self.addToolScreen, bg="#009f9a")
+        self.addTool.grid(column=0, row=0)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
-        self.chooseReference.grid(column=0, row=0)
+        self.chooseReference.grid(column=0, row=1)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
-        self.chooseVcf.grid(column=0, row=1)
+        self.chooseVcf.grid(column=0, row=2)
         self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexing)
-        self.makeIndex.grid(column=0, row=2)
+        self.makeIndex.grid(column=0, row=3)
         self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.toolScreen)
-        self.submitButton.grid(column=0,row=3)
+        self.submitButton.grid(column=0,row=4)
 
 
 
@@ -79,7 +81,6 @@ class GUI(Tk):
         self.labelframe = LabelFrame(self, text="Select Tools")
         self.labelframe.pack(fill="both", expand="yes")
 
-        self.dict = {1: self.level1, 2: self.level2, 3: self.level3, 4: self.level4 , 5: self.level5}
         index = 0
         self.checkboxes.clear()
 
@@ -105,10 +106,6 @@ class GUI(Tk):
                 #self.label1.grid(column=2,row=index-1)
                 self.label1.place(x=280, y=50 + index * 30)
 
-
-        self.button = Button(self.labelframe, text="Add new tool", width=10, command=self.addToolScreen, bg="#009fff")
-        self.button.place(x=280, y = 50 + (index +1)*30)
-        self.button.place(x=280, y = 50 + (index +1)*30)
 
         self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
         self.button2.pack(side="bottom")
@@ -171,7 +168,7 @@ class GUI(Tk):
         self.labelframe1 = LabelFrame(self, text="Add New Tool")
         self.labelframe1.pack(fill="both", expand="yes")
 
-        args = ['Tool Name', 'Commands', 'Input File Format', 'Output File Format', 'Step']
+        args = ['Tool Name', 'Indexing Command','Commands', 'Input File Format', 'Output File Format', 'Step']
         i = 0
         for arg in args:
             self.arg = Label(self, text= arg + ": ")
@@ -189,11 +186,14 @@ class GUI(Tk):
                 self.inputName3 = Entry(self, width=35)
                 self.inputName3.place(x=250, y=90 + i * 30)
             elif i == 4:
-                self.inputName4 = Spinbox(self,from_=1, to=len(self.dict), width= 2)
+                self.inputName4 = Entry(self, width=35)
                 self.inputName4.place(x=250, y=90 + i * 30)
-            else:
-                self.inputName5 = Entry(self, width=35)
+            elif i == 5:
+                self.inputName5 = Spinbox(self,from_=1, to=len(self.dict), width= 2)
                 self.inputName5.place(x=250, y=90 + i * 30)
+            else:
+                self.inputName6 = Entry(self, width=35)
+                self.inputName6.place(x=250, y=90 + i * 30)
             i += 1
 
         self.list = Listbox(self, width= 50, height= 6)
@@ -210,8 +210,8 @@ class GUI(Tk):
 
     def addButtonClick(self):
 
-        level = int(self.inputName4.get())
-        tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get()]
+        level = int(self.inputName5.get())
+        tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get(),self.inputName3.get(),self.inputName4.get()]
 
         if len(self.inputName.get()) != 0 :
             self.dict[level].append(tool)
