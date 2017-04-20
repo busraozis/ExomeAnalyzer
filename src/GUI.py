@@ -21,6 +21,7 @@ class GUI(Tk):
         self.fileList = []
         self.vcfFiles =[]
         self.checkboxes = []
+        self.checkboxesForIndex = []
 
         self.level1 = [['FastQC','','commands', 'input file' , 'output file' ]]
         self.level2 = [['BWA-MEM', '','commands', 'input file', 'output file']]
@@ -37,7 +38,7 @@ class GUI(Tk):
         self.chooseReference.grid(column=0, row=1)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
         self.chooseVcf.grid(column=0, row=2)
-        self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexing)
+        self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexTools)
         self.makeIndex.grid(column=0, row=3)
         self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.toolScreen)
         self.submitButton.grid(column=0,row=4)
@@ -53,10 +54,47 @@ class GUI(Tk):
                                                     filetypes = (("fasta","*.fasta"),("all files","*.*")))
     def chooseVcf(self):
         cwd = os.getcwd()
-        self.vcf =  filedialog.askopenfilename(initialdir = cwd,
-                                                    title = "Choose Vcf Files",
-                                                    filetypes = (("vcf","*.vcf"),("all files","*.*")))
+        self.vcf =  filedialog.askopenfilename(initialdir = cwd, title = "Choose Vcf Files", filetypes = (("vcf","*.vcf"),("all files","*.*")))
         self.vcfFiles.append(self.vcf)
+
+    def indexTools(self):
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        self.labelframe = LabelFrame(self, text="Select Tools for Indexing")
+        self.labelframe.pack(fill="both", expand="yes")
+
+        index = 0
+        self.checkboxes.clear()
+
+        for key in self.dict.keys():
+
+            self.label = Label(self.labelframe, text="Step " + str(key))
+            # self.label.grid(column=0, row= index)
+            self.label.place(x=200, y=50 + (index + 1) * 30)
+
+            for item in self.dict[key]:
+                index += 1
+                var = IntVar()
+                self.cbox1 = Checkbutton(self.labelframe, variable=var)
+                self.checkboxesForIndex.append(var)
+                self.cbox1.place(x=250, y=50 + index * 30)
+                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
+                self.label1.place(x=280, y=50 + index * 30)
+
+        self.startProgress = Button(self, text="Start Indexing \u279C", bg="#009fff", command=self.indexing)
+        self.startProgress.pack(side="bottom")
+
+        self.chooseInput = Button(self, text="Choose reference files", bg="#ffe7b5", command=self.chooseReference)
+        self.chooseInput.pack(side="bottom")
+
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
 
     def indexing(self):
         self.indexing = Tk()
@@ -107,11 +145,18 @@ class GUI(Tk):
                 self.label1.place(x=280, y=50 + index * 30)
 
 
-        self.button2 = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
-        self.button2.pack(side="bottom")
+        self.startProgress = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
+        self.startProgress.pack(side="bottom")
 
-        self.button3 = Button(self, text="Choose input files", bg = "#ffe7b5", command=self.clickForSelectFiles)
-        self.button3.pack(side="bottom")
+        self.chooseInput = Button(self, text="Choose input files", bg = "#ffe7b5", command=self.clickForSelectFiles)
+        self.chooseInput.pack(side="bottom")
+
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
+
+    def returnMainMenu(self):
+        self.destroy()
+        self.__init__()
 
     def startSimulation(self):
         if len(self.fileList) == 0 :
@@ -207,6 +252,8 @@ class GUI(Tk):
 
         self.addButton = Button(self, text="Add", width=15, command=self.addButtonClick)
         self.addButton.pack()
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
 
     def addButtonClick(self):
 
