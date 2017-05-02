@@ -209,10 +209,10 @@ class GUI(Tk):
         self.info.place(x=10, y=20)
         self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
         self.progress.place(x=50, y=50)
-        self.process()
+        self.process() #IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
         #self.ilerle()
 
-#IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
+
     def process(self):
         level = 0
         outputFileNumber = 1
@@ -236,6 +236,7 @@ class GUI(Tk):
                                 elif(item == 'vcf'):
                                     newcommand += self.vcfFiles[0]
                                 elif(item == 'fastq'):
+                                    #NOT CORRRECT METHOD FOR 2 FASTQ FILES!!!!
                                     newcommand += self.fileList[0]
                                 else:
                                     newcommand += self.fileList[0]+ str(outputFileNumber-1) + '.' + item
