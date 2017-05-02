@@ -211,7 +211,7 @@ class GUI(Tk):
         self.process()
         #self.ilerle()
 
-
+#IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
     def process(self):
         for item in self.checkboxes:
             for i in item:
