@@ -11,7 +11,6 @@ import time
 class GUI(Tk):
 
     commandFile = "commands.txt"
-    indexFile = "index.txt"
     fileList = []
     vcfFiles = []
     checkboxes = []
@@ -55,19 +54,24 @@ class GUI(Tk):
         with open(self.commandFile, "r") as commands:
             toolInfo = []
             commandArray = []
+            indexArray = []
             toolsInLevel = []
             for line in commands:
                 array = line.split()
                 if(array[0] == 'level'):
                     level = array[1]
                 elif (array[0] == 'end'):
+                    toolInfo.append(indexArray)
                     toolInfo.append(commandArray)
                     toolsInLevel.append(toolInfo)
                     commandArray = []
+                    indexArray = []
                     toolInfo = []
                 elif(array[0]=='end-of-level'):
                     self.tools.append(toolsInLevel)
                     toolsInLevel = []
+                elif(array[0] == 'index:'):
+                    indexArray.append(line)
                 elif(len(array) == 1):
                     toolName = array[0]
                     toolInfo.append(toolName)
@@ -297,6 +301,7 @@ class GUI(Tk):
 
         if len(self.inputName.get()) != 0 :
             self.dict[level].append(tool)
+
 
 
         self.labelframe1.destroy()

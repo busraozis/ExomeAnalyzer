@@ -4,6 +4,7 @@ end
 end-of-level
 level 2
 BWA
+index: bwa index reference
 bwa aln -n 0.01 -t 8 all_chr_hg19.fasta TEX59_1.fastq > TEX59_1.sai
 bwa aln -n 0.01 -t 8 all_chr_hg19.fasta TEX59_2.fastq > TEX59_2.sai
 bwa sampe all_chr_hg19.fasta TEX59_1.sai TEX59_2.sai TEX59_1.fastq TEX59_2.fastq > TEX59.sam
