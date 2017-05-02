@@ -18,13 +18,6 @@ class GUI(Tk):
 
     tools = []
     levelNumber = 4
-    #level1 = [['FastQC', '', 'commands', 'input file', 'output file']]
-    #level2 = [['BWA-MEM', '', 'commands', 'input file', 'output file']]
-    #level3 = [['Picard', '', 'commands', 'input file', 'output file']]
-    #level4 = [['Samtools', '', 'commands', 'input file', 'output file'],
-    #               ['GATK', '', 'commands', 'input file', 'output file'],
-    #               ['Freebayes', '', 'commands', 'input file', 'output file']]
-    #level5 = [['Annovar', '', 'commands', 'input file', 'output file']]
     dict = {}
 
     def __init__(self,master=None):
@@ -162,7 +155,7 @@ class GUI(Tk):
         self.checkboxes.clear()
 
         for key in self.dict.keys() :
-
+            checkboxConditions = []
             self.label = Label(self.labelframe, text= "Step " + str(key))
             #self.label.grid(column=0, row= index)
             self.label.place(x=200, y=50 + (index+1) * 30)
@@ -176,13 +169,13 @@ class GUI(Tk):
                 else :
                     self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
-                self.checkboxes.append(var)
+                checkboxConditions.append(var)
                 #self.cbox1.grid(column=1,row=index-1)
                 self.cbox1.place(x=250, y=50 + index * 30)
                 self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
                 #self.label1.grid(column=2,row=index-1)
                 self.label1.place(x=280, y=50 + index * 30)
-
+            self.checkboxes.append(checkboxConditions)
 
         self.startProgress = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
         self.startProgress.pack(side="bottom")
@@ -215,7 +208,22 @@ class GUI(Tk):
         self.info.place(x=10, y=20)
         self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
         self.progress.place(x=50, y=50)
-        self.ilerle()
+        self.process()
+        #self.ilerle()
+
+
+    def process(self):
+        for item in self.checkboxes:
+            for i in item:
+                if( i == 1 ):
+                    level = self.checkboxes.index(item)
+                    toolNum = item.index(i)
+                    toolLevel = self.dict[level]
+                    tool = toolLevel[toolNum]
+                    commands = tool[2]
+                    for command in commands:
+                        returnCode = subprocess.call(command)
+                        print(returnCode)
 
     def ilerle(self):
         self.progress["value"] = self.progress["value"] + 1
@@ -302,7 +310,7 @@ class GUI(Tk):
         if len(self.inputName.get()) != 0 :
             self.dict[level].append(tool)
 
-
+        print(self.tools)
 
         self.labelframe1.destroy()
         self.addButton.destroy()
