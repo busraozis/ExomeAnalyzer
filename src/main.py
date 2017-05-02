@@ -71,7 +71,7 @@ class GUI(Tk):
                 else:
                     commandArray.append(line)
 
-        print(self.tools)
+        #print(self.tools)
 
         for i in range(1, self.levelNumber+1):
             self.dict[i] = self.tools[i-1]
@@ -226,31 +226,85 @@ class GUI(Tk):
                     tool = toolLevel[number]
                     commands = tool[2]
                     for command in commands:
+                        countOfFiles = command.count('{fastq}') # Total number of fastq files in the command
                         array = command.split()
                         newcommand = ''
-                        for item in array:
-                            if(item.startswith('{')):
-                                item = item[1:len(item)-1]
-                                if(item == 'fasta' or item == 'fa'):
-                                    newcommand += self.reference
-                                elif(item == 'vcf'):
-                                    newcommand += self.vcfFiles[0]
-                                elif(item == 'fastq'):
-                                    #NOT CORRRECT METHOD FOR 2 FASTQ FILES!!!!
-                                    newcommand += self.fileList[0]
+                        #If command has only one fastq, commmand runs repeatedly for every selected input file
+                        if(countOfFiles == 1):
+                            for i in range(0,len(self.fileList)):
+                                newcommand = ''
+                                for item in array:
+                                    if (item.startswith('{')):
+                                        item = item[1:len(item) - 1]
+                                        if (item == 'fasta' or item == 'fa'):
+                                            newcommand += self.reference
+                                        elif (item == 'vcf'):
+                                            newcommand += self.vcfFiles[0]
+                                        elif (item == 'fastq'):
+                                            newcommand += self.fileList[i]
+                                        else:
+                                            newcommand += self.fileList[0] + str(outputFileNumber - 1) + '.' + item
+                                            outputFileNumber += 1
+                                    elif (item.startswith('[')):
+                                        item = item[1:len(item) - 1]
+                                        #Output file always takes the first files name + its extention
+                                        outputFile = self.fileList[0] + str(outputFileNumber) + '.' + item
+                                        outputFileNumber += 1
+                                        newcommand += outputFile
+                                    else:
+                                        newcommand += item
+                                    newcommand += ' '
+                                returnCode = newcommand
+                                # returnCode = subprocess.call(newcommand)
+                                print(returnCode)
+                        elif(countOfFiles > 1):
+                            fileNumber = 0
+                            for item in array:
+                                if(item.startswith('{')):
+                                    item = item[1:len(item)-1]
+                                    if(item == 'fasta' or item == 'fa'):
+                                        newcommand += self.reference
+                                    elif(item == 'vcf'):
+                                        newcommand += self.vcfFiles[0]
+                                    elif(item == 'fastq'):
+                                        newcommand += self.fileList[fileNumber]
+                                        fileNumber += 1
+                                    else:
+                                        #Probably Wrong Solution!!!!!
+                                        newcommand += self.fileList[0]+ str(outputFileNumber-2) + '.' + item
+                                        outputFileNumber += 1
+                                elif(item.startswith('[')):
+                                    item = item[1:len(item) - 1]
+                                    # Output file always takes the first files name + its extention
+                                    outputFile = self.fileList[0] + str(outputFileNumber) +'.' + item
+                                    outputFileNumber +=1
+                                    newcommand += outputFile
                                 else:
-                                    newcommand += self.fileList[0]+ str(outputFileNumber-1) + '.' + item
-                            elif(item.startswith('[')):
-                                item = item[1:len(item) - 1]
-                                outputFile = self.fileList[0] + str(outputFileNumber) +'.' + item
-                                outputFileNumber +=1
-                                newcommand += outputFile
-                            else:
-                                newcommand += item
-                            newcommand += ' '
-                        returnCode = newcommand
-                        #returnCode = subprocess.call(newcommand)
-                        print(returnCode)
+                                    newcommand += item
+                                newcommand += ' '
+                            returnCode = newcommand
+                            #returnCode = subprocess.call(newcommand)
+                            print(returnCode)
+                        else:
+                            for item in array:
+                                if (item.startswith('{')):
+                                    item = item[1:len(item) - 1]
+                                    if (item == 'fasta' or item == 'fa'):
+                                        newcommand += self.reference
+                                    elif (item == 'vcf'):
+                                        newcommand += self.vcfFiles[0]
+                                    else:
+                                        newcommand += self.fileList[0] + str(outputFileNumber - 1) + '.' + item
+                                elif (item.startswith('[')):
+                                    item = item[1:len(item) - 1]
+                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + item
+                                    outputFileNumber += 1
+                                    newcommand += outputFile
+                                else:
+                                    newcommand += item
+                                newcommand += ' '
+                            # returnCode = subprocess.call(newcommand)
+                            print(newcommand)
 
 
     def ilerle(self):
@@ -270,8 +324,8 @@ class GUI(Tk):
 
     def clickForSelectFiles(self):
         cwd = os.getcwd()
-        self.filename =  filedialog.askopenfilename(initialdir = cwd, title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
-        self.fileList.append(self.filename)   ##seçilen dosyalar fileList listesinde!!
+        self.filenames =  filedialog.askopenfilenames(initialdir = cwd, title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
+        self.fileList = list(self.filenames)   ##seçilen dosyalar fileList listesinde!!
 
         #for index in range(len(self.fileList)):
          #   print(self.fileList[index])
