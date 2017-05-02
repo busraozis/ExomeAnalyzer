@@ -5,17 +5,17 @@ end-of-level
 level 2
 BWA
 index: bwa index reference
-bwa aln -n 0.01 -t 8 all_chr_hg19.fasta TEX59_1.fastq > TEX59_1.sai
-bwa aln -n 0.01 -t 8 all_chr_hg19.fasta TEX59_2.fastq > TEX59_2.sai
-bwa sampe all_chr_hg19.fasta TEX59_1.sai TEX59_2.sai TEX59_1.fastq TEX59_2.fastq > TEX59.sam
+bwa aln -n 0.01 -t 8 {fasta} {fastq} > [sai]
+bwa aln -n 0.01 -t 8 {fasta} {fastq} > [sai]
+bwa sampe {fasta} {sai} {sai} {fastq} {fastq} > [sam]
 end
 end-of-level
 level 3
 Samtools
-samtools view -bS TEX59.sam > TEX59.bam
-samtools sort TEX59.bam TEX59.sorted.bam
-samtools rmdup TEX59.sorted.bam.bam TEX59.rmdup.sorted.bam
-samtools index TEX59.rmdup.sorted.bam
+samtools view -bS {sam} > [bam]
+samtools sort {bam} [bam]
+samtools rmdup {bam} [bam]
+samtools index {bam}
 end
 end-of-level
 level 4

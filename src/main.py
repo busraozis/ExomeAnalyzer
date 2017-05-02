@@ -83,7 +83,7 @@ class GUI(Tk):
         cwd = os.getcwd()
         self.reference =  filedialog.askopenfilename(initialdir = cwd,
                                                     title = "Choose Reference File",
-                                                    filetypes = (("fasta","*.fasta"),("all files","*.*")))
+                                                    filetypes = (("fasta","*.fasta"),("fa","*.fa")))
     def chooseVcf(self):
         cwd = os.getcwd()
         self.vcf =  filedialog.askopenfilename(initialdir = cwd, title = "Choose Vcf Files", filetypes = (("vcf","*.vcf"),("all files","*.*")))
@@ -192,14 +192,14 @@ class GUI(Tk):
         self.__init__()
 
     def startSimulation(self):
-        """if len(self.fileList) == 0 :
+        if len(self.fileList) == 0 :
             self.popup = Tk()
             self.popup.title("Warning!")
             self.popup.geometry("400x100")
             self.popup.resizable(width=False, height=False)
             self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
             self.warning.place(x=10, y=20)
-            return"""
+            return
 
         self.progressDialog = Tk()
         self.progressDialog.title("Simulation has started!")
@@ -215,6 +215,7 @@ class GUI(Tk):
 #IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
     def process(self):
         level = 0
+        outputFileNumber = 1
         for item in self.checkboxes:
             level += 1
             number = -1
@@ -225,8 +226,29 @@ class GUI(Tk):
                     tool = toolLevel[number]
                     commands = tool[2]
                     for command in commands:
-                        #returnCode = command
-                        returnCode = subprocess.call(command)
+                        array = command.split()
+                        newcommand = ''
+                        for item in array:
+                            if(item.startswith('{')):
+                                item = item[1:len(item)-1]
+                                if(item == 'fasta' or item == 'fa'):
+                                    newcommand += self.reference
+                                elif(item == 'vcf'):
+                                    newcommand += self.vcfFiles[0]
+                                elif(item == 'fastq'):
+                                    newcommand += self.fileList[0]
+                                else:
+                                    newcommand += self.fileList[0]+ str(outputFileNumber-1) + '.' + item
+                            elif(item.startswith('[')):
+                                item = item[1:len(item) - 1]
+                                outputFile = self.fileList[0] + str(outputFileNumber) +'.' + item
+                                outputFileNumber +=1
+                                newcommand += outputFile
+                            else:
+                                newcommand += item
+                            newcommand += ' '
+                        returnCode = newcommand
+                        #returnCode = subprocess.call(newcommand)
                         print(returnCode)
 
 
