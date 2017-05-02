@@ -228,83 +228,76 @@ class GUI(Tk):
                     for command in commands:
                         countOfFiles = command.count('{fastq}') # Total number of fastq files in the command
                         array = command.split()
-                        newcommand = ''
                         #If command has only one fastq, commmand runs repeatedly for every selected input file
                         if(countOfFiles == 1):
                             for i in range(0,len(self.fileList)):
-                                newcommand = ''
                                 for item in array:
                                     if (item.startswith('{')):
-                                        item = item[1:len(item) - 1]
-                                        if (item == 'fasta' or item == 'fa'):
-                                            newcommand += self.reference
-                                        elif (item == 'vcf'):
-                                            newcommand += self.vcfFiles[0]
-                                        elif (item == 'fastq'):
-                                            newcommand += self.fileList[i]
+                                        newitem = item[1:len(item) - 1]
+                                        if (newitem == 'fasta' or newitem == 'fa'):
+                                            array[array.index(item)] = self.reference
+                                        elif (newitem == 'vcf'):
+                                            array[array.index(item)] = self.vcfFiles[0]
+                                        elif (newitem == 'fastq'):
+                                            array[array.index(item)] = self.fileList[i]
                                         else:
-                                            newcommand += self.fileList[0] + str(outputFileNumber - 1) + '.' + item
+                                            array[array.index(item)] = self.fileList[0] + str(outputFileNumber - 1) + '.' + newitem
                                             outputFileNumber += 1
                                     elif (item.startswith('[')):
-                                        item = item[1:len(item) - 1]
+                                        newitem = item[1:len(item) - 1]
                                         #Output file always takes the first files name + its extention
-                                        outputFile = self.fileList[0] + str(outputFileNumber) + '.' + item
+                                        outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
                                         outputFileNumber += 1
-                                        newcommand += outputFile
-                                    else:
-                                        newcommand += item
-                                    newcommand += ' '
-                                returnCode = newcommand
-                                # returnCode = subprocess.call(newcommand)
+                                        array[array.index(item)] = outputFile
+
+                                returnCode = subprocess.call(array)
                                 print(returnCode)
                         elif(countOfFiles > 1):
                             fileNumber = 0
                             for item in array:
                                 if(item.startswith('{')):
-                                    item = item[1:len(item)-1]
-                                    if(item == 'fasta' or item == 'fa'):
-                                        newcommand += self.reference
-                                    elif(item == 'vcf'):
-                                        newcommand += self.vcfFiles[0]
-                                    elif(item == 'fastq'):
-                                        newcommand += self.fileList[fileNumber]
+                                    newitem = item[1:len(item)-1]
+                                    if(newitem == 'fasta' or newitem == 'fa'):
+                                        array[array.index(item)] = self.reference
+                                    elif(newitem == 'vcf'):
+                                        array[array.index(item)] = self.vcfFiles[0]
+                                        #newcommand += self.vcfFiles[0]
+                                    elif(newitem == 'fastq'):
+                                        array[array.index(item)] = self.fileList[fileNumber]
+                                        #newcommand += self.fileList[fileNumber]
                                         fileNumber += 1
                                     else:
                                         #Probably Wrong Solution!!!!!
-                                        newcommand += self.fileList[0]+ str(outputFileNumber-2) + '.' + item
+                                        #newcommand += self.fileList[0]+ str(outputFileNumber-2) + '.' + item
+                                        array[array.index(item)] = self.fileList[0]+ str(outputFileNumber-2) + '.' + item
                                         outputFileNumber += 1
                                 elif(item.startswith('[')):
-                                    item = item[1:len(item) - 1]
+                                    newitem = item[1:len(item) - 1]
                                     # Output file always takes the first files name + its extention
-                                    outputFile = self.fileList[0] + str(outputFileNumber) +'.' + item
+                                    outputFile = self.fileList[0] + str(outputFileNumber) +'.' + newitem
                                     outputFileNumber +=1
-                                    newcommand += outputFile
-                                else:
-                                    newcommand += item
-                                newcommand += ' '
-                            returnCode = newcommand
-                            #returnCode = subprocess.call(newcommand)
+                                    array[array.index(item)] = outputFile
+                                    #newcommand += outputFile
+
+                            returnCode = subprocess.call(array)
                             print(returnCode)
                         else:
                             for item in array:
                                 if (item.startswith('{')):
-                                    item = item[1:len(item) - 1]
-                                    if (item == 'fasta' or item == 'fa'):
-                                        newcommand += self.reference
-                                    elif (item == 'vcf'):
-                                        newcommand += self.vcfFiles[0]
+                                    newitem = item[1:len(item) - 1]
+                                    if (newitem == 'fasta' or newitem == 'fa'):
+                                        array[array.index(item)] = self.reference
+                                    elif (newitem == 'vcf'):
+                                        array[array.index(item)] = self.vcfFiles[0]
                                     else:
-                                        newcommand += self.fileList[0] + str(outputFileNumber - 1) + '.' + item
+                                        array[array.index(item)] = self.fileList[0] + str(outputFileNumber - 1) + '.' + newitem
                                 elif (item.startswith('[')):
-                                    item = item[1:len(item) - 1]
-                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + item
+                                    newitem = item[1:len(item) - 1]
+                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
                                     outputFileNumber += 1
-                                    newcommand += outputFile
-                                else:
-                                    newcommand += item
-                                newcommand += ' '
-                            # returnCode = subprocess.call(newcommand)
-                            print(newcommand)
+                                    array[array.index(item)] = outputFile
+                            returnCode = subprocess.call(array)
+                            print(returnCode)
 
 
     def ilerle(self):
