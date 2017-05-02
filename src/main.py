@@ -169,7 +169,8 @@ class GUI(Tk):
                 else :
                     self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
-                checkboxConditions.append(var)
+                value = var.get()
+                checkboxConditions.append(value)
                 #self.cbox1.grid(column=1,row=index-1)
                 self.cbox1.place(x=250, y=50 + index * 30)
                 self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
@@ -191,14 +192,14 @@ class GUI(Tk):
         self.__init__()
 
     def startSimulation(self):
-        if len(self.fileList) == 0 :
+        """if len(self.fileList) == 0 :
             self.popup = Tk()
             self.popup.title("Warning!")
             self.popup.geometry("400x100")
             self.popup.resizable(width=False, height=False)
             self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
             self.warning.place(x=10, y=20)
-            return
+            return"""
 
         self.progressDialog = Tk()
         self.progressDialog.title("Simulation has started!")
@@ -213,17 +214,21 @@ class GUI(Tk):
 
 #IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
     def process(self):
+        level = 0
         for item in self.checkboxes:
+            level += 1
+            number = -1
             for i in item:
+                number += 1
                 if( i == 1 ):
-                    level = self.checkboxes.index(item)
-                    toolNum = item.index(i)
                     toolLevel = self.dict[level]
-                    tool = toolLevel[toolNum]
+                    tool = toolLevel[number]
                     commands = tool[2]
                     for command in commands:
+                        #returnCode = command
                         returnCode = subprocess.call(command)
                         print(returnCode)
+
 
     def ilerle(self):
         self.progress["value"] = self.progress["value"] + 1
