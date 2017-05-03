@@ -191,6 +191,8 @@ class GUI(Tk):
         self.destroy()
         self.__init__()
 
+    """This method creates the simulation screen
+            and calls the process method """
     def startSimulation(self):
         if len(self.fileList) == 0 :
             self.popup = Tk()
@@ -207,14 +209,18 @@ class GUI(Tk):
         self.progressDialog.resizable(width=False, height=False)
         self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
         self.info.place(x=10, y=20)
-        self.progress = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
-        self.progress.place(x=50, y=50)
+        self.progressBar = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
+        self.progressBar.place(x=50, y=500)
         self.process() #IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
         #self.ilerle()
 
 
+    """This method parses the commands of the selected tools,
+        assignes appropriate files according to the extentions,
+        and calls subprocess to run the commands """
     def process(self):
         level = 0
+        index = 0
         outputFileNumber = 1
         for item in self.checkboxes:
             level += 1
@@ -226,6 +232,7 @@ class GUI(Tk):
                     tool = toolLevel[number]
                     commands = tool[2]
                     for command in commands:
+                        index += 1
                         countOfFiles = command.count('{fastq}') # Total number of fastq files in the command
                         array = command.split()
                         #If command has only one fastq, commmand runs repeatedly for every selected input file
@@ -249,9 +256,6 @@ class GUI(Tk):
                                         outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
                                         outputFileNumber += 1
                                         array[array.index(item)] = outputFile
-
-                                returnCode = subprocess.call(array)
-                                print(returnCode)
                         elif(countOfFiles > 1):
                             fileNumber = 0
                             for item in array:
@@ -261,15 +265,12 @@ class GUI(Tk):
                                         array[array.index(item)] = self.reference
                                     elif(newitem == 'vcf'):
                                         array[array.index(item)] = self.vcfFiles[0]
-                                        #newcommand += self.vcfFiles[0]
                                     elif(newitem == 'fastq'):
                                         array[array.index(item)] = self.fileList[fileNumber]
-                                        #newcommand += self.fileList[fileNumber]
                                         fileNumber += 1
                                     else:
                                         #Probably Wrong Solution!!!!!
-                                        #newcommand += self.fileList[0]+ str(outputFileNumber-2) + '.' + item
-                                        array[array.index(item)] = self.fileList[0]+ str(outputFileNumber-2) + '.' + item
+                                        array[array.index(item)] = self.fileList[0]+ str(outputFileNumber-2) + '.' + newitem
                                         outputFileNumber += 1
                                 elif(item.startswith('[')):
                                     newitem = item[1:len(item) - 1]
@@ -277,10 +278,6 @@ class GUI(Tk):
                                     outputFile = self.fileList[0] + str(outputFileNumber) +'.' + newitem
                                     outputFileNumber +=1
                                     array[array.index(item)] = outputFile
-                                    #newcommand += outputFile
-
-                            returnCode = subprocess.call(array)
-                            print(returnCode)
                         else:
                             for item in array:
                                 if (item.startswith('{')):
@@ -296,13 +293,16 @@ class GUI(Tk):
                                     outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
                                     outputFileNumber += 1
                                     array[array.index(item)] = outputFile
-                            returnCode = subprocess.call(array)
-                            print(returnCode)
 
+                        self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
+                        self.runningTool.place(x=10, y=50+ index*20)
+                        #returnCode = subprocess.call(array)
+                        #print(returnCode)
+                        print(array)
 
     def ilerle(self):
-        self.progress["value"] = self.progress["value"] + 1
-        if self.progress["value"] < 100:
+        self.progressBar["value"] = self.progressBar["value"] + 1
+        if self.progressBar["value"] < 100:
             # read more bytes after 100 ms
             self.after(100, self.ilerle)
 

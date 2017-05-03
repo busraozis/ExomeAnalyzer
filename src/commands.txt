@@ -11,10 +11,10 @@ end
 end-of-level
 level 3
 Samtools
-samtools view -bS {sam} > [bam]
-samtools sort {bam} [bam]
-samtools rmdup {bam} [bam]
-samtools index {bam}
+./samtools view -bS {sam} > [bam]
+./samtools sort {bam} [bam]
+./samtools rmdup {bam} [bam]
+./samtools index {bam}
 end
 end-of-level
 level 4
