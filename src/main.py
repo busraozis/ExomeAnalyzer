@@ -1,6 +1,4 @@
-import subprocess
 #from src.GUI import GUI
-import sqlite3
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -14,6 +12,7 @@ class GUI(Tk):
     fileList = []
     vcfFiles = []
     checkboxes = []
+    checkboxes2 = []
     checkboxesForIndex = []
 
     tools = []
@@ -31,7 +30,7 @@ class GUI(Tk):
         self.geometry("800x500")
         self.resizable(width=False, height=False)
 
-        self.addTool = Button(self, text="Add new tool", width=25, command=self.addToolScreen, bg="#009f9a")
+        self.addTool = Button(self, text="Settings", width=25, command=self.settings, bg="#009f9a")
         self.addTool.grid(column=0, row=0)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
         self.chooseReference.grid(column=0, row=1)
@@ -45,7 +44,7 @@ class GUI(Tk):
         level = 0
 
         """ Opens the file commands.txt and initilizes
-        the lists that contain the tool informations"""
+        the lists that contain the tool information"""
         with open(self.commandFile, "r") as commands:
             toolInfo = []
             commandArray = []
@@ -90,6 +89,69 @@ class GUI(Tk):
         cwd = os.getcwd()
         self.vcf =  filedialog.askopenfilename(initialdir = cwd, title = "Choose Vcf Files", filetypes = (("vcf","*.vcf"),("all files","*.*")))
         self.vcfFiles.append(self.vcf)
+
+    def settings(self):
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        self.labelframe = LabelFrame(self, text="Settings")
+        self.labelframe.pack(fill="both", expand="yes")
+
+        index = 0
+
+        for key in self.dict.keys() :
+            checkboxConditions = []
+            self.label = Label(self.labelframe, text= "Step " + str(key))
+            self.label.place(x=200, y=50 + (index+1) * 30)
+
+            for item in self.dict[key] :
+                index += 1
+                variable = IntVar()
+                self.cbox1 = Checkbutton(self.labelframe,variable=variable)
+
+                checkboxConditions.append(variable)
+                self.cbox1.place(x=250, y=50 + index * 30)
+                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
+                self.label1.place(x=280, y=50 + index * 30)
+            self.checkboxes2.append(checkboxConditions)
+
+        self.updateT = Button(self, text="Update", bg="#009fff", command=self.updateTool)
+        self.updateT.place(x=280, y=100 + index * 30)
+
+        self.deleteT = Button(self, text="Delete", bg = "#ffe7b5", command=self.deleteTool)
+        self.deleteT.place(x=280, y=130 + index * 30)
+
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
+
+        self.addT = Button(self, text="Add New Tool", bg="#ffe7b5", command=self.addToolScreen)
+        self.addT.pack(side="bottom")
+
+
+
+    def updateTool(self):
+        #Open a new update page
+        self.settings()
+
+    def deleteTool(self):
+        #Delete the tool from dictionary
+        level = 0
+        for item in self.checkboxes2:
+            level += 1
+            number = -1
+            for i in item:
+                number += 1
+                if (i.get() == 1):
+                    array = self.dict[level]
+                    del self.dict[level]
+                    del array[number]
+                    self.dict[level] = array
+        self.settings()
 
     def indexTools(self):
         self.destroy()
@@ -159,7 +221,6 @@ class GUI(Tk):
         for key in self.dict.keys() :
             checkboxConditions = []
             self.label = Label(self.labelframe, text= "Step " + str(key))
-            #self.label.grid(column=0, row= index)
             self.label.place(x=200, y=50 + (index+1) * 30)
 
             for item in self.dict[key] :
@@ -172,10 +233,8 @@ class GUI(Tk):
                     self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
                 checkboxConditions.append(var)
-                #self.cbox1.grid(column=1,row=index-1)
                 self.cbox1.place(x=250, y=50 + index * 30)
                 self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
-                #self.label1.grid(column=2,row=index-1)
                 self.label1.place(x=280, y=50 + index * 30)
             self.checkboxes.append(checkboxConditions)
 
@@ -212,7 +271,7 @@ class GUI(Tk):
         self.info.place(x=10, y=20)
         self.progressBar = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
         self.progressBar.place(x=50, y=500)
-        self.process() #IN CASE OF ERROR, COMMENT OUT PROCESS SECTION
+        self.process()
         #self.ilerle()
 
 
@@ -395,8 +454,7 @@ class GUI(Tk):
         self.list.destroy()
         self.inputName.destroy()
 
-        self.toolScreen()
-
+        self.settings()
 
 
 if __name__ == "__main__":
