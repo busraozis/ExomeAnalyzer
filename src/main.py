@@ -44,6 +44,8 @@ class GUI(Tk):
 
         level = 0
 
+        """ Opens the file commands.txt and initilizes
+        the lists that contain the tool informations"""
         with open(self.commandFile, "r") as commands:
             toolInfo = []
             commandArray = []
@@ -226,6 +228,7 @@ class GUI(Tk):
             number = -1
             for i in item:
                 number += 1
+                #print(i.get())
                 if( i.get() == 1 ):
                     toolLevel = self.dict[level]
                     tool = toolLevel[number]
