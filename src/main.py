@@ -169,8 +169,7 @@ class GUI(Tk):
                 else :
                     self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
-                value = var.get()
-                checkboxConditions.append(value)
+                checkboxConditions.append(var)
                 #self.cbox1.grid(column=1,row=index-1)
                 self.cbox1.place(x=250, y=50 + index * 30)
                 self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
@@ -227,7 +226,7 @@ class GUI(Tk):
             number = -1
             for i in item:
                 number += 1
-                if( i == 1 ):
+                if( i.get() == 1 ):
                     toolLevel = self.dict[level]
                     tool = toolLevel[number]
                     commands = tool[2]
@@ -298,7 +297,7 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50+ index*20)
                         #returnCode = subprocess.call(array)
                         #print(returnCode)
-                        print(array)
+                        #print(array)
 
     def ilerle(self):
         self.progressBar["value"] = self.progressBar["value"] + 1
