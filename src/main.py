@@ -30,16 +30,21 @@ class GUI(Tk):
         self.geometry("800x500")
         self.resizable(width=False, height=False)
 
+        background_image = PhotoImage(file="dna.gif")
+        self.background_label = Label(self, image=background_image, bd=0)
+        self.background_label.pack(fill=BOTH, expand=YES)
+
+
         self.addTool = Button(self, text="Settings", width=25, command=self.settings, bg="#009f9a")
-        self.addTool.grid(column=0, row=0)
+        #self.addTool.grid(column=0, row=0)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
-        self.chooseReference.grid(column=0, row=1)
+        #self.chooseReference.grid(column=0, row=1)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
-        self.chooseVcf.grid(column=0, row=2)
+        #self.chooseVcf.grid(column=0, row=2)
         self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexTools)
-        self.makeIndex.grid(column=0, row=3)
+        #self.makeIndex.grid(column=0, row=3)
         self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.toolScreen)
-        self.submitButton.grid(column=0,row=4)
+        #self.submitButton.grid(column=0,row=4)
 
         level = 0
 
