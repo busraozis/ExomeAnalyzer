@@ -16,7 +16,7 @@ class GUI(Tk):
     checkboxesForIndex = []
 
     tools = []
-    levelNumber = 4
+    levelNumber = 5
     dict = {}
 
     def __init__(self,master=None):
@@ -30,21 +30,20 @@ class GUI(Tk):
         self.geometry("800x500")
         self.resizable(width=False, height=False)
 
-        background_image = PhotoImage(file="dna.gif")
-        self.background_label = Label(self, image=background_image, bd=0)
-        self.background_label.pack(fill=BOTH, expand=YES)
+        #background_image = PhotoImage(file="dna.gif")
+        #self.background_label = Label(self, image=background_image, bd=0)
+        #self.background_label.pack(fill=BOTH, expand=YES)
 
-
-        self.addTool = Button(self, text="Settings", width=25, command=self.settings, bg="#009f9a")
-        #self.addTool.grid(column=0, row=0)
+        self.addTool = Button(self, text="Start Simulation", width=25, command=self.toolScreen, bg="#009f9a")
+        self.addTool.grid(column=0, row=0)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
-        #self.chooseReference.grid(column=0, row=1)
+        self.chooseReference.grid(column=0, row=1)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
-        #self.chooseVcf.grid(column=0, row=2)
+        self.chooseVcf.grid(column=0, row=2)
         self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexTools)
-        #self.makeIndex.grid(column=0, row=3)
-        self.submitButton = Button(self, text="Start Simulation", width=25, bg = "#009f9a", command=self.toolScreen)
-        #self.submitButton.grid(column=0,row=4)
+        self.makeIndex.grid(column=0, row=3)
+        self.submitButton = Button(self, text="Settings", width=25, bg = "#009f9a", command=self.settings)
+        self.submitButton.grid(column=0,row=4)
 
         level = 0
 
@@ -156,6 +155,20 @@ class GUI(Tk):
                     del self.dict[level]
                     del array[number]
                     self.dict[level] = array
+
+        #Rewrite the content
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
         self.settings()
 
     def indexTools(self):
@@ -451,7 +464,21 @@ class GUI(Tk):
         if len(self.inputName.get()) != 0 :
             self.dict[level].append(tool)
 
-        print(self.tools)
+        #Rewrite the content
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
+
+        #print(self.tools)
 
         self.labelframe1.destroy()
         self.addButton.destroy()
