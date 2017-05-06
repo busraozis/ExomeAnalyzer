@@ -140,7 +140,28 @@ class GUI(Tk):
 
     def updateTool(self):
         #Open a new update page
-        self.settings()
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        #get selected tool to update
+        level = 0
+        for item in self.checkboxes2:
+            level += 1
+            number = -1
+            for i in item:
+                number += 1
+                print(i.get())
+                if (i.get() == 1):
+                    updatedToolName = self.dict[level][number][0]
+        self.checkboxes2.clear()
+        self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg = "blue", font = "Verdana 15 bold").pack()
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
 
     def deleteTool(self):
         #Delete the tool from dictionary
@@ -150,11 +171,13 @@ class GUI(Tk):
             number = -1
             for i in item:
                 number += 1
+                print(i.get())
                 if (i.get() == 1):
                     array = self.dict[level]
                     del self.dict[level]
                     del array[number]
                     self.dict[level] = array
+        self.checkboxes2.clear()
 
         #Rewrite the content
         with open(self.commandFile, 'w') as file:
