@@ -158,8 +158,50 @@ class GUI(Tk):
                 print(i.get())
                 if (i.get() == 1):
                     updatedToolName = self.dict[level][number][0]
+                    updatedToolLevel = level
+                    if len(self.dict[level][number][1]) > 0:
+                        updatedToolIndexCommand = self.dict[level][number][1]
+                    else:
+                        updatedToolIndexCommand = ""
+                    if len(self.dict[level][number][2]) > 0:
+                        updatedToolCommands = self.dict[level][number][2]
+                    else:
+                        updatedToolCommands = ['']
         self.checkboxes2.clear()
-        self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg = "blue", font = "Verdana 15 bold").pack()
+
+        self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg="blue", font="Verdana 15 bold").pack()
+
+        args = ['Indexing Command', 'Commands', 'Input File Format', 'Output File Format', 'Step']
+        i = 0
+        lastCommandPosition = 1
+        for arg in args:
+            self.arg = Label(self, text=arg + ": ")
+            if i == 0:
+                self.indexCommand = Label(self, text=updatedToolIndexCommand, font="Verdana 15 bold").pack()      # INDEX COMMAND
+                #self.indexCommand.place(x=250, y=90 + i * 30)
+                self.arg.place(x=100, y=90 + i * 30)
+            elif i == 1:    #COMMANDS
+                j = 0
+                for commands in updatedToolCommands:
+                    self.command = Label(self, text=updatedToolCommands[j])
+                    self.command.place(x=250, y=90 + i * (j+1) * 30)
+                    self.arg.place(x=100, y=90 + i * 30)
+                    j += 1
+                lastCommandPosition = j
+            elif i == 2:    # INPUT FILE FORMAT
+                lastCommandPosition += 1
+                self.arg.place(x=100, y=90 + (i-1) * lastCommandPosition * 30)
+            elif i == 3:    # OUTPUT FILE FORMAT
+                lastCommandPosition += 1
+                self.arg.place(x=100, y=90 + (i-2) * lastCommandPosition * 30)
+            elif i == 4:
+                var = StringVar()
+                var.set(level)
+                self.inputName5 = Spinbox(self, from_=1, to=len(self.dict), width=2, textvariable=var, state ='disabled')
+                self.inputName5.place(x=250, y=90 + (i-3) * (lastCommandPosition+1) * 30)
+                self.arg.place(x=100, y=90 + (i-3) * (lastCommandPosition+1) * 30)
+            i += 1
+
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
 
