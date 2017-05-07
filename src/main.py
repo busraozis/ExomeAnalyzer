@@ -146,7 +146,7 @@ class GUI(Tk):
 
         self.title("Exome Analyzer")
         self.geometry("800x500")
-        self.resizable(width=False, height=False)
+        self.resizable(width=True, height=True)
 
         #get selected tool to update
         level = 0
@@ -177,17 +177,40 @@ class GUI(Tk):
         for arg in args:
             self.arg = Label(self, text=arg + ": ")
             if i == 0:
-                self.indexCommand = Label(self, text=updatedToolIndexCommand[0])      # INDEX COMMAND
-                self.indexCommand.place(x=250, y=90 + i * 30)
-                self.arg.place(x=100, y=90 + i * 30)
+                j = 0
+                self.arg.place(x=100, y=90 + i * (j + 1) * 30)
+                for indexCommands in updatedToolIndexCommand:
+                    self.indexCommand = Label(self, text=updatedToolIndexCommand[j])      # INDEX COMMAND
+                    self.indexCommand.place(x=250, y=90 + i * (j+1) * 30)
+                    self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2,command=self.increaseOrder())
+                    self.increaseOrd.place(x=600, y=90 + i * (j+1) * 30)
+                    self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2,command=self.decreaseOrder())
+                    self.decreaseOrd.place(x=625, y=90 + i * (j+1) * 30)
+                    self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand())
+                    self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
+                    j += 1
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand())
+                self.addComm.place(x=600, y = 90 + (i+1) * (j) * 30)
+                j += 1
+                lastCommandPosition = j
             elif i == 1:    #COMMANDS
                 j = 0
+                self.arg.place(x=100, y=90 + i * (j + 1) * lastCommandPosition * 30)
                 for commands in updatedToolCommands:
-                    self.command = Label(self, text=updatedToolCommands[j])
-                    self.command.place(x=250, y=90 + i * (j+1) * 30)
-                    self.arg.place(x=100, y=90 + i * 30)
+                    if(not commands== ''):
+                        self.command = Label(self, text=updatedToolCommands[j])
+                        self.command.place(x=250, y=90 + i * (j+2) * 30)
+                        self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2, command=self.increaseOrder())
+                        self.increaseOrd.place(x=600, y=90 + i * (j+2) * 30)
+                        self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2, command=self.decreaseOrder())
+                        self.decreaseOrd.place(x=625, y=90 + i * (j+2) * 30)
+                        self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand())
+                        self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
-                lastCommandPosition = j
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand())
+                self.addComm.place(x=600, y = 90 + i * (j+2) * 30)
+                j += 1
+                lastCommandPosition = j+1
             elif i == 2:    # INPUT FILE FORMAT
                 lastCommandPosition += 1
                 self.arg.place(x=100, y=90 + (i-1) * lastCommandPosition * 30)
@@ -204,6 +227,18 @@ class GUI(Tk):
 
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
+
+    def addCommand(self):
+        print("Add New Command")
+
+    def increaseOrder(self):
+        print("increase")
+
+    def decreaseOrder(self):
+        print("decrease")
+
+    def removeCommand(self):
+        print("remove command")
 
     def deleteTool(self):
         #Delete the tool from dictionary
