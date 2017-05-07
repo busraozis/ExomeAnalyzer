@@ -198,7 +198,7 @@ class GUI(Tk):
                     self.removeComm[j].place(x=675, y=90 + i * (j+1) * 30)
                     #self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand)
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel, number=number: self.addIndexCommand(updatedToolLevel, number))
                 self.addComm.place(x=600, y = 90 + (i+1) * (j) * 30)
                 j += 1
                 lastCommandPosition = j
@@ -217,7 +217,7 @@ class GUI(Tk):
                         self.removeComm1[j].place(x=675, y=90 + i * (j+2) * 30)
                         #self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand)
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel,number=number: self.addCommand(updatedToolLevel, number))
                 self.addComm.place(x=600, y = 90 + i * (j+2) * 30)
                 j += 1
                 lastCommandPosition = j+1
@@ -238,8 +238,67 @@ class GUI(Tk):
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
 
-    def addCommand(self):
-        print("Add New Command")
+    def addIndexCommand(self,level,number):
+        self.popup2 = Tk()
+        self.popup2.title("Add New Indexing Command")
+        self.popup2.geometry("400x170")
+        self.popup2.resizable(width=False, height=False)
+        labelinf = Label(self.popup2, text="Enter new indexing command:")
+        labelinf.place(x=10, y=20)
+        self.enterCommand1 = Entry(self.popup2, width=50)
+        self.enterCommand1.place(x=10, y=50)
+        saveButton = Button(self.popup2, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeIndexCommand(level,number))
+        saveButton.place(x=10, y=80)
+
+    def writeIndexCommand(self, level, number):
+        newCommand = self.enterCommand1.get()
+        self.dict[level][number][1].append("index: "+newCommand+"\n")
+
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
+        commandAdded = Label(self.popup2, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
+        commandAdded.place(x=10, y=110)
+
+    def addCommand(self, level, number):
+        self.popup1 = Tk()
+        self.popup1.title("Add New Command")
+        self.popup1.geometry("400x170")
+        self.popup1.resizable(width=False, height=False)
+        labelinf = Label(self.popup1, text="Enter new command:")
+        labelinf.place(x=10, y=20)
+        self.enterCommand = Entry(self.popup1, width=50)
+        self.enterCommand.place(x=10, y=50)
+        saveButton = Button(self.popup1, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeCommand(level,number))
+        saveButton.place(x=10, y=80)
+
+    def writeCommand(self, level, number):
+        newCommand = self.enterCommand.get()
+        self.dict[level][number][2].append(newCommand+"\n")
+
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
+        commandAdded = Label(self.popup1, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
+        commandAdded.place(x=10, y=110)
 
     def increaseOrder(self):
         print("increase")
