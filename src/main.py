@@ -177,8 +177,8 @@ class GUI(Tk):
         for arg in args:
             self.arg = Label(self, text=arg + ": ")
             if i == 0:
-                self.indexCommand = Label(self, text=updatedToolIndexCommand, font="Verdana 15 bold").pack()      # INDEX COMMAND
-                #self.indexCommand.place(x=250, y=90 + i * 30)
+                self.indexCommand = Label(self, text=updatedToolIndexCommand[0])      # INDEX COMMAND
+                self.indexCommand.place(x=250, y=90 + i * 30)
                 self.arg.place(x=100, y=90 + i * 30)
             elif i == 1:    #COMMANDS
                 j = 0
