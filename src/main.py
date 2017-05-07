@@ -169,7 +169,7 @@ class GUI(Tk):
                         updatedToolCommands = ['']
         self.checkboxes2.clear()
 
-        self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg="blue", font="Verdana 15 bold").pack()
+        self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg="#009f9a", font="Verdana 15 bold").pack()
 
         args = ['Indexing Command', 'Commands', 'Input File Format', 'Output File Format', 'Step']
         i = 0
@@ -182,14 +182,14 @@ class GUI(Tk):
                 for indexCommands in updatedToolIndexCommand:
                     self.indexCommand = Label(self, text=updatedToolIndexCommand[j])      # INDEX COMMAND
                     self.indexCommand.place(x=250, y=90 + i * (j+1) * 30)
-                    self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2,command=self.increaseOrder())
+                    self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2,command=self.increaseOrder)
                     self.increaseOrd.place(x=600, y=90 + i * (j+1) * 30)
-                    self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2,command=self.decreaseOrder())
+                    self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2,command=self.decreaseOrder)
                     self.decreaseOrd.place(x=625, y=90 + i * (j+1) * 30)
-                    self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand())
+                    self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand)
                     self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand())
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand)
                 self.addComm.place(x=600, y = 90 + (i+1) * (j) * 30)
                 j += 1
                 lastCommandPosition = j
@@ -200,14 +200,14 @@ class GUI(Tk):
                     if(not commands== ''):
                         self.command = Label(self, text=updatedToolCommands[j])
                         self.command.place(x=250, y=90 + i * (j+2) * 30)
-                        self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2, command=self.increaseOrder())
+                        self.increaseOrd = Button(self, text="+", bg="#ffe7b5", width=2, command=self.increaseOrder)
                         self.increaseOrd.place(x=600, y=90 + i * (j+2) * 30)
-                        self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2, command=self.decreaseOrder())
+                        self.decreaseOrd = Button(self, text="-", bg="#ffe7b5", width=2, command=self.decreaseOrder)
                         self.decreaseOrd.place(x=625, y=90 + i * (j+2) * 30)
-                        self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand())
+                        self.removeComm = Button(self, text="Remove", bg="#9e0000", command=self.removeCommand)
                         self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand())
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=self.addCommand)
                 self.addComm.place(x=600, y = 90 + i * (j+2) * 30)
                 j += 1
                 lastCommandPosition = j+1
@@ -238,7 +238,7 @@ class GUI(Tk):
         print("decrease")
 
     def removeCommand(self):
-        print("remove command")
+        print("remove command ")
 
     def deleteTool(self):
         #Delete the tool from dictionary
