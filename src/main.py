@@ -69,14 +69,15 @@ class GUI(Tk):
                     self.tools.append(toolsInLevel)
                     toolsInLevel = []
                 elif(array[0] == 'index:'):
-                    indexArray.append(line)
+                    indexing = line.split(' ', 1)
+                    indexArray.append(indexing[1])
                 elif(len(array) == 1):
                     toolName = array[0]
                     toolInfo.append(toolName)
                 else:
                     commandArray.append(line)
 
-        #print(self.tools)
+        print(self.tools)
 
         for i in range(1, self.levelNumber+1):
             self.dict[i] = self.tools[i-1]
@@ -286,7 +287,7 @@ class GUI(Tk):
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
                     for index in tool[1]: # indexing commands
-                        file.write(index)
+                        file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -611,7 +612,15 @@ class GUI(Tk):
     def addButtonClick(self):
 
         level = int(self.inputName5.get())
-        tool = [self.inputName.get(),self.inputName1.get(),self.inputName2.get()]
+
+        comList = self.inputName1.get().split(";")
+        indexList = self.inputName2.get().split(";")
+        for i in range(0,len(comList)):
+            comList[i] += '\n'
+        for i in range(0, len(indexList)):
+            indexList[i] += '\n'
+
+        tool = [self.inputName.get(),comList,indexList]
 
         if len(self.inputName.get()) != 0 :
             self.dict[level].append(tool)
@@ -624,7 +633,7 @@ class GUI(Tk):
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
                     for index in tool[1]: # indexing commands
-                        file.write(index)
+                        file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
