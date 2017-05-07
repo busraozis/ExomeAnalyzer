@@ -10,6 +10,11 @@ bwa sampe {fasta} {sai} {sai} {fastq} {fastq} > [sam]
 end
 end-of-level
 level 3
+Picard
+index: picard index
+sadhakj dsaljda 
+ dashgdakjh asdjkl
+end
 end-of-level
 level 4
 Samtools
@@ -18,7 +23,15 @@ Samtools
 ./samtools rmdup {bam} [bam]
 ./samtools index {bam}
 end
-gatk
+Freebayes
+index: jshdakd kjsahdkjah
+sfdjhksksjakld kljsdalk
+ndjsand ajsdalkend
+end
+Gatk
+index: 
+java -jar gatk 
+ saddj asdjhakj
 end
 end-of-level
 level 5
