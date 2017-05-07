@@ -176,7 +176,8 @@ class GUI(Tk):
         self.decreaseOrdCommand = []
         self.increaseOrdIndex = []
         self.decreaseOrdIndex = []
-
+        self.indexCommands = []
+        self.commands = []
         args = ['Indexing Command', 'Commands', 'Input File Format', 'Output File Format', 'Step']
         i = 0
         lastCommandPosition = 1
@@ -186,13 +187,13 @@ class GUI(Tk):
                 j = 0
                 self.arg.place(x=100, y=90 + i * (j + 1) * 30)
                 for indexCommands in updatedToolIndexCommand:
-                    self.indexCommand = Label(self, text=updatedToolIndexCommand[j])      # INDEX COMMAND
-                    self.indexCommand.place(x=250, y=90 + i * (j+1) * 30)
+                    self.indexCommands.append(Label(self, text=updatedToolIndexCommand[j]) )     # INDEX COMMAND
+                    self.indexCommands[j].place(x=250, y=90 + i * (j+1) * 30)
                     self.increaseOrdIndex.append(Button(self, text="+", bg="#ffe7b5", width=2,command=lambda j=j: self.increaseOrderIndex(j)))
                     self.increaseOrdIndex[j].place(x=600, y=90 + i * (j+1) * 30)
                     self.decreaseOrdIndex.append(Button(self, text="-", bg="#ffe7b5", width=2,command=lambda j=j: self.decreaseOrderIndex(j)))
                     self.decreaseOrdIndex[j].place(x=625, y=90 + i * (j+1) * 30)
-                    self.removeComm.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j: self.removeIndexCommand(j)))
+                    self.removeComm.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, number=number: self.removeIndexCommand(j, updatedToolLevel, number)))
                     self.removeComm[j].place(x=675, y=90 + i * (j+1) * 30)
                     #self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
                     j += 1
@@ -205,13 +206,13 @@ class GUI(Tk):
                 self.arg.place(x=100, y=90 + i * (j + 1) * lastCommandPosition * 30)
                 for commands in updatedToolCommands:
                     if(not commands== ''):
-                        self.command = Label(self, text=updatedToolCommands[j])
-                        self.command.place(x=250, y=90 + i * (j+2) * 30)
+                        self.commands.append(Label(self, text=updatedToolCommands[j]))
+                        self.commands[j].place(x=250, y=90 + i * (j+2) * 30)
                         self.increaseOrdCommand.append(Button(self, text="+", bg="#ffe7b5", width=2, command=lambda j=j: self.increaseOrder(j)))
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
                         self.decreaseOrdCommand.append(Button(self, text="-", bg="#ffe7b5", width=2, command=lambda j=j: self.decreaseOrder(j)))
                         self.decreaseOrdCommand[j].place(x=625, y=90 + i * (j+2) * 30)
-                        self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j: self.removeCommand(j)))
+                        self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, number=number: self.removeCommand(j,updatedToolLevel, number)))
                         self.removeComm1[j].place(x=675, y=90 + i * (j+2) * 30)
                         #self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
@@ -251,16 +252,45 @@ class GUI(Tk):
     def decreaseOrderIndex(self, n):
         print("decreaseIndex "+n)
 
-    def removeIndexCommand(self, n):
+    def removeIndexCommand(self, n, level, number):
         self.removeComm[n].destroy()
         self.increaseOrdIndex[n].destroy()
         self.decreaseOrdIndex[n].destroy()
+        self.indexCommands[n].destroy()
+        del self.dict[level][number][1][n]
 
-    def removeCommand(self, n):
-        print(n)
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
+
+    def removeCommand(self, n, level, number):
         self.removeComm1[n].destroy()
         self.increaseOrdCommand[n].destroy()
         self.decreaseOrdCommand[n].destroy()
+        self.commands[n].destroy()
+        del self.dict[level][number][2][n]
+
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    for index in tool[1]: # indexing commands
+                        file.write(index)
+                    for command in tool[2]:
+                        file.write(command)
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
 
     def deleteTool(self):
         #Delete the tool from dictionary
