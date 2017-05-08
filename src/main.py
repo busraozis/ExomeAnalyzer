@@ -69,8 +69,7 @@ class GUI(Tk):
                     self.tools.append(toolsInLevel)
                     toolsInLevel = []
                 elif(array[0] == 'index:'):
-                    indexing = line.split(' ', 1)
-                    indexArray.append(indexing[1])
+                    indexArray.append(line)
                 elif(len(array) == 1):
                     toolName = array[0]
                     toolInfo.append(toolName)
@@ -160,6 +159,7 @@ class GUI(Tk):
                 if (i.get() == 1):
                     updatedToolName = self.dict[level][number][0]
                     updatedToolLevel = level
+                    n = number
                     if len(self.dict[level][number][1]) > 0:
                         updatedToolIndexCommand = self.dict[level][number][1]
                     else:
@@ -194,11 +194,11 @@ class GUI(Tk):
                     self.increaseOrdIndex[j].place(x=600, y=90 + i * (j+1) * 30)
                     self.decreaseOrdIndex.append(Button(self, text="-", bg="#ffe7b5", width=2,command=lambda j=j: self.decreaseOrderIndex(j)))
                     self.decreaseOrdIndex[j].place(x=625, y=90 + i * (j+1) * 30)
-                    self.removeComm.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, number=number: self.removeIndexCommand(j, updatedToolLevel, number)))
+                    self.removeComm.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, n=n: self.removeIndexCommand(j, updatedToolLevel, n)))
                     self.removeComm[j].place(x=675, y=90 + i * (j+1) * 30)
                     #self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel, number=number: self.addIndexCommand(updatedToolLevel, number))
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel, n=n: self.addIndexCommand(updatedToolLevel, n))
                 self.addComm.place(x=600, y = 90 + (i+1) * (j) * 30)
                 j += 1
                 lastCommandPosition = j
@@ -213,11 +213,11 @@ class GUI(Tk):
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
                         self.decreaseOrdCommand.append(Button(self, text="-", bg="#ffe7b5", width=2, command=lambda j=j: self.decreaseOrder(j)))
                         self.decreaseOrdCommand[j].place(x=625, y=90 + i * (j+2) * 30)
-                        self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, number=number: self.removeCommand(j,updatedToolLevel, number)))
+                        self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=updatedToolLevel, n=n: self.removeCommand(j,updatedToolLevel, n)))
                         self.removeComm1[j].place(x=675, y=90 + i * (j+2) * 30)
                         #self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
-                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel,number=number: self.addCommand(updatedToolLevel, number))
+                self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=updatedToolLevel,n=n: self.addCommand(updatedToolLevel, n))
                 self.addComm.place(x=600, y = 90 + i * (j+2) * 30)
                 j += 1
                 lastCommandPosition = j+1
@@ -237,6 +237,18 @@ class GUI(Tk):
 
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
+
+    def addCommand(self,level,number):
+        self.popup1 = Tk()
+        self.popup1.title("Add New Indexing Command")
+        self.popup1.geometry("400x170")
+        self.popup1.resizable(width=False, height=False)
+        labelinf = Label(self.popup1, text="Enter new command:")
+        labelinf.place(x=10, y=20)
+        self.enterCommand = Entry(self.popup1, width=50)
+        self.enterCommand.place(x=10, y=50)
+        saveButton = Button(self.popup1, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeCommand(level,number))
+        saveButton.place(x=10, y=80)
 
     def addIndexCommand(self,level,number):
         self.popup2 = Tk()
@@ -268,18 +280,6 @@ class GUI(Tk):
                 file.write('end-of-level' + '\n')
         commandAdded = Label(self.popup2, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
         commandAdded.place(x=10, y=110)
-
-    def addCommand(self, level, number):
-        self.popup1 = Tk()
-        self.popup1.title("Add New Command")
-        self.popup1.geometry("400x170")
-        self.popup1.resizable(width=False, height=False)
-        labelinf = Label(self.popup1, text="Enter new command:")
-        labelinf.place(x=10, y=20)
-        self.enterCommand = Entry(self.popup1, width=50)
-        self.enterCommand.place(x=10, y=50)
-        saveButton = Button(self.popup1, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeCommand(level,number))
-        saveButton.place(x=10, y=80)
 
     def writeCommand(self, level, number):
         newCommand = self.enterCommand.get()
