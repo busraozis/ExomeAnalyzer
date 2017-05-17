@@ -14,6 +14,7 @@ class GUI(Tk):
     checkboxes = []
     checkboxes2 = []
     checkboxesForIndex = []
+    reference = None
 
     tools = []
     levelNumber = 5
@@ -40,7 +41,7 @@ class GUI(Tk):
         self.chooseReference.grid(column=0, row=1)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
         self.chooseVcf.grid(column=0, row=2)
-        self.makeIndex = Button(self, text="Make Index", width=25, bg="#009f9a", command=self.indexTools)
+        self.makeIndex = Button(self, text="Indexing", width=25, bg="#009f9a", command=self.indexTools)
         self.makeIndex.grid(column=0, row=3)
         self.submitButton = Button(self, text="Settings", width=25, bg = "#009f9a", command=self.settings)
         self.submitButton.grid(column=0,row=4)
@@ -69,7 +70,8 @@ class GUI(Tk):
                     self.tools.append(toolsInLevel)
                     toolsInLevel = []
                 elif(array[0] == 'index:'):
-                    indexArray.append(line)
+                    indexComm = line.split(' ', 1)
+                    indexArray.append(indexComm[1])
                 elif(len(array) == 1):
                     toolName = array[0]
                     toolInfo.append(toolName)
@@ -136,8 +138,6 @@ class GUI(Tk):
         self.addT = Button(self, text="Add New Tool", bg="#ffe7b5", command=self.addToolScreen)
         self.addT.pack(side="bottom")
 
-
-
     def updateTool(self):
         #Open a new update page
         self.destroy()
@@ -168,7 +168,7 @@ class GUI(Tk):
                         updatedToolCommands = self.dict[level][number][2]
                     else:
                         updatedToolCommands = ['']
-        self.checkboxes2.clear()
+        del self.checkboxes2[:]
 
         self.updatePageTitle = Label(self, text="Update " + updatedToolName, fg="#009f9a", font="Verdana 15 bold").pack()
         self.removeComm = []
@@ -272,8 +272,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write(index)
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -291,8 +292,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write(index)
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -325,8 +327,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write(index)
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -345,8 +348,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write("index: " + index)
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -366,7 +370,7 @@ class GUI(Tk):
                     del self.dict[level]
                     del array[number]
                     self.dict[level] = array
-        self.checkboxes2.clear()
+        del self.checkboxes2[:]
 
         #Rewrite the content
         with open(self.commandFile, 'w') as file:
@@ -375,8 +379,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write(index)
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')
@@ -384,6 +389,15 @@ class GUI(Tk):
         self.settings()
 
     def indexTools(self):
+        if self.reference is None:
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
+            self.warning = Label(self.popup, text="You must choose a reference file!")
+            self.warning.place(x=10, y=20)
+            return
+
         self.destroy()
         Tk.__init__(self)
         self.grid()
@@ -400,6 +414,7 @@ class GUI(Tk):
 
         for key in self.dict.keys():
 
+            checkboxConditions = []
             self.label = Label(self.labelframe, text="Step " + str(key))
             # self.label.grid(column=0, row= index)
             self.label.place(x=200, y=50 + (index + 1) * 30)
@@ -407,17 +422,18 @@ class GUI(Tk):
             for item in self.dict[key]:
                 index += 1
                 var = IntVar()
-                self.cbox1 = Checkbutton(self.labelframe, variable=var)
-                self.checkboxesForIndex.append(var)
+                if not item[1]:
+                    self.cbox1 = Checkbutton(self.labelframe, state=DISABLED)
+                else:
+                    self.cbox1 = Checkbutton(self.labelframe, variable=var)
+                checkboxConditions.append(var)
                 self.cbox1.place(x=250, y=50 + index * 30)
                 self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
                 self.label1.place(x=280, y=50 + index * 30)
+            self.checkboxesForIndex.append(checkboxConditions)
 
         self.startProgress = Button(self, text="Start Indexing \u279C", bg="#009fff", command=self.indexing)
         self.startProgress.pack(side="bottom")
-
-        self.chooseInput = Button(self, text="Choose reference files", bg="#ffe7b5", command=self.chooseReference)
-        self.chooseInput.pack(side="bottom")
 
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
@@ -429,9 +445,43 @@ class GUI(Tk):
         self.indexing.resizable(width=False, height=False)
         self.info = Label(self.indexing, text="Indexing has started.")
         self.info.place(x=10, y=20)
-        self.progress = ttk.Progressbar(self.indexing, orient=HORIZONTAL, length=500, mode='determinate')
-        self.progress.place(x=50, y=50)
-        #subprocess.call(['bwa', 'index', '-a', 'bwtsw', self.reference ])
+        self.indexProcess()
+
+    def indexProcess(self):
+        level = 0
+        index = 0
+        outputFileNumber = 1
+        for item in self.checkboxesForIndex:
+            level += 1
+            number = -1
+            for i in item:
+                number += 1
+                #print(i.get())
+                if( i.get() == 1 ):
+                    toolLevel = self.dict[level]
+                    tool = toolLevel[number]
+                    indexcommands = tool[1]
+                    for command in indexcommands:
+                        index += 1
+                        array = command.split()
+                        for item in array:
+                            if (item.startswith('{')):
+                                newitem = item[1:len(item) - 1]
+                                if (newitem == 'fasta' or newitem == 'fa'):
+                                    array[array.index(item)] = self.reference
+                                elif (newitem == 'vcf'):
+                                    array[array.index(item)] = self.vcfFiles[0]
+                            elif (item.startswith('[')):
+                                newitem = item[1:len(item) - 1]
+                                ref = self.reference.split('.')
+                                outputFile = ref[0] + '.' + newitem
+                                array[array.index(item)] = outputFile
+
+                        self.runningTool = Label(self, text=array[0] + ' ' + array[1])
+                        self.runningTool.place(x=10, y=50+ index*20)
+                        #returnCode = subprocess.call(array)
+                        #print(returnCode)
+                        print(array)
 
     def toolScreen(self):
         self.destroy()
@@ -691,8 +741,9 @@ class GUI(Tk):
                 file.write("level " + str(level) + "\n") # Level name
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
-                    for index in tool[1]: # indexing commands
-                        file.write("index: " + index)
+                    if tool[1]:
+                        for index in tool[1]: # indexing commands
+                            file.write("index: " + index)
                     for command in tool[2]:
                         file.write(command)
                     file.write('end' + '\n')

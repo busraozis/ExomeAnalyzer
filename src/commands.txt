@@ -1,36 +1,25 @@
 level 1
-FASTQC
-end
 end-of-level
 level 2
 BWA
-index: index: index: bwa index reference
-bwa aln -n 0.01 -t 8 {fasta} {fastq} > [sai]
-bwa sampe {fasta} {sai} {sai} {fastq} {fastq} > [sam]
+index: bwa index -a bwtsw {fa} 
+bwa mem -M -t 16 {fasta} {fastq} {fastq} > [sam]
 end
 end-of-level
 level 3
 Picard
-index: index: index: picard index
-sadhakj dsaljda
- dashgdakjh asdjkl
+index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= {dict}
+java -jar picard.jar SortSam INPUT=  {sam} OUTPUT= [bam] SORT_ORDER=coordinate
+java -jar picard.jar MarkDuplicates INPUT= {bam} OUTPUT= [bam] METRICS_FILE=metrics.txt
 end
 end-of-level
 level 4
 Samtools
+index: samtools faidx {fa}
 ./samtools view -bS {sam} > [bam]
 ./samtools sort {bam} [bam]
 ./samtools rmdup {bam} [bam]
 ./samtools index {bam}
-end
-Freebayes
-index: index: index: jshdakd kjsahdkjah
-bususaus
-end
-Gatk
-index: index: index:
-java -jar gatk
- saddj asdjhakj
 end
 end-of-level
 level 5
