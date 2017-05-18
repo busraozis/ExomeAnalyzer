@@ -1,4 +1,3 @@
-#from src.GUI import GUI
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -718,8 +717,8 @@ class GUI(Tk):
 
                         self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
                         self.runningTool.place(x=10, y=50+ index*20)
-                        #returnCode = subprocess.call(array)
-                        #print(returnCode)
+                        returnCode = subprocess.call(array)
+                        print(returnCode)
                         #print(array)
 
     def ilerle(self):
