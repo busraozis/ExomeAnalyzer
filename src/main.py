@@ -5,6 +5,45 @@ from tkinter import filedialog
 import os
 import subprocess
 import time
+import re
+
+class HoverInfo(Menu):
+    def __init__(self, parent, text, command=None):
+        self._com = command
+        Menu.__init__(self, parent, tearoff=0)
+        if not isinstance(text, str):
+            raise TypeError('Trying to initialise a Hover Menu with a non string type: ' + text.__class__.__name__)
+        toktext = re.split('\n', text)
+        for t in toktext:
+            self.add_command(label=t)
+        self._displayed = False
+        self.master.bind("<Enter>", self.Display)
+        self.master.bind("<Leave>", self.Remove)
+
+    def __del__(self):
+        self.master.unbind("<Enter>")
+        self.master.unbind("<Leave>")
+
+
+    def Display(self, event):
+        if not self._displayed:
+            self._displayed = True
+            self.post(event.x_root, event.y_root)
+        if self._com != None:
+            self.master.unbind_all("<Return>")
+            self.master.bind_all("<Return>", self.Click)
+
+
+    def Remove(self, event):
+        if self._displayed:
+            self._displayed = False
+            self.unpost()
+        if self._com != None:
+            self.unbind_all("<Return>")
+
+
+    def Click(self, event):
+        self._com()
 
 class GUI(Tk):
 
@@ -17,7 +56,7 @@ class GUI(Tk):
     reference = None
 
     tools = []
-    levelNumber = 5
+    levelNumber = 6
     dict = {}
 
     def __init__(self,master=None):
@@ -36,15 +75,23 @@ class GUI(Tk):
         #self.background_label.pack(fill=BOTH, expand=YES)
 
         self.addTool = Button(self, text="Start Simulation", width=25, command=self.toolScreen, bg="#009f9a")
-        self.addTool.grid(column=0, row=0)
+        self.addTool.place(x=270, y =150)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
-        self.chooseReference.grid(column=0, row=1)
+        self.chooseReference.place(x=270, y =180)
         self.chooseVcf = Button(self, text="Choose Vcf Files", width=25, bg="#009f9a", command=self.chooseVcf)
-        self.chooseVcf.grid(column=0, row=2)
+        self.chooseVcf.place(x=270, y =210)
         self.makeIndex = Button(self, text="Indexing", width=25, bg="#009f9a", command=self.indexTools)
-        self.makeIndex.grid(column=0, row=3)
+        self.makeIndex.place(x=270, y =240)
         self.submitButton = Button(self, text="Settings", width=25, bg = "#009f9a", command=self.settings)
-        self.submitButton.grid(column=0,row=4)
+        self.submitButton.place(x=270, y =270)
+
+        self.l1 = Label(self, text="?")
+        self.l2 = Label(self, text="", width=40)
+        self.l1.place(x=500, y =240)
+        self.l2.place(x=510, y =240)
+
+        self.l1.bind("<Enter>", self.on_enter)
+        self.l1.bind("<Leave>", self.on_leave)
 
         level = 0
 
@@ -86,6 +133,12 @@ class GUI(Tk):
         """self.submitButton.pack()
         self.submitButton.place(width=250, relx = 0.365, rely=0.5)"""
 
+    def on_enter(self, event):
+        self.l2.configure(text="Necessary for some tools before \nrunning for the first time.")
+
+    def on_leave(self, enter):
+        self.l2.configure(text="")
+
     def chooseRef(self):
         cwd = os.getcwd()
         self.reference =  filedialog.askopenfilename(initialdir = cwd,
@@ -118,7 +171,10 @@ class GUI(Tk):
             for item in self.dict[key] :
                 index += 1
                 variable = IntVar()
-                self.cbox1 = Checkbutton(self.labelframe,variable=variable)
+                if key == 6:
+                    self.cbox1 = Checkbutton(self.labelframe, variable=variable, state=DISABLED)
+                else:
+                    self.cbox1 = Checkbutton(self.labelframe,variable=variable)
 
                 checkboxConditions.append(variable)
                 self.cbox1.place(x=250, y=50 + index * 30)
@@ -138,6 +194,62 @@ class GUI(Tk):
         self.addT = Button(self, text="Add New Tool", bg="#ffe7b5", command=self.addToolScreen)
         self.addT.pack(side="bottom")
 
+    """
+    def uptodate(self):
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        self.labelframe1 = LabelFrame(self, text="Update Tool")
+        self.labelframe1.pack(fill="both", expand="yes")
+
+        args = ['Tool Name', 'Indexing Command','Commands', 'Input File Format', 'Output File Format', 'Step']
+        i = 0
+        for arg in args:
+            self.arg = Label(self, text= arg + ": ")
+            self.arg.place(x=100, y=90 + i*30)
+            if i == 0:
+                var = StringVar()
+                self.inputName = Message(self, width=35, text='tool')    #TOOL NAME
+                self.inputName.place(x=250, y=90 + i * 30)
+            elif i == 1:
+                self.inputName1 = Entry(self, width=35)   #INDEX COMMAND
+                self.inputName1.place(x=250, y=90 + i * 30)
+            elif i == 2:
+                self.inputName2 = Entry(self, width=35)   #COMMANDS
+                self.inputName2.place(x=250, y=90 + i * 30)
+            elif i == 3:
+                self.inputName3 = Entry(self, width=35)   #INPUT FILE FORMAT
+                self.inputName3.place(x=250, y=90 + i * 30)
+            elif i == 4:
+                self.inputName4 = Entry(self, width=35)   #OUTPUT FILE FORMAT
+                self.inputName4.place(x=250, y=90 + i * 30)
+            elif i == 5:
+                self.inputName5 = Spinbox(self,from_=1, to=len(self.dict), width= 2)
+                self.inputName5.place(x=250, y=90 + i * 30)
+            else:
+                self.inputName6 = Entry(self, width=35)
+                self.inputName6.place(x=250, y=90 + i * 30)
+            i += 1
+
+        self.list = Listbox(self, width= 50, height= 6)
+        self.list.insert(END, "Hint")
+        self.list.insert(END, "Step 1: Quality Control")
+        self.list.insert(END, "Step 2: Initial Alingment")
+        self.list.insert(END, "Step 3: Removing Duplicates")
+        self.list.insert(END, "Step 4: Recalibration, Calling and Filtering Variants")
+        self.list.insert(END, "Step 5: Annovar")
+        self.list.pack()
+
+        self.addButton = Button(self, text="Add", width=15, command=self.addButtonClick)
+        self.addButton.pack()
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
+    """
     def updateTool(self):
         #Open a new update page
         self.destroy()
@@ -484,6 +596,14 @@ class GUI(Tk):
                         print(array)
 
     def toolScreen(self):
+        if self.reference is None:
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
+            self.warning = Label(self.popup, text="You must choose a reference file!")
+            self.warning.place(x=10, y=20)
+            return
         self.destroy()
         Tk.__init__(self)
         self.grid()
@@ -506,7 +626,7 @@ class GUI(Tk):
             for item in self.dict[key] :
                 index += 1
                 var = IntVar()
-                if len(self.dict[key]) == 1 and key != 1 :
+                if len(self.dict[key]) == 1 and key != 1  and key != 6:
                     self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
                     self.cbox1.select()
                 else :
