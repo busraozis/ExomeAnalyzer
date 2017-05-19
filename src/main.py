@@ -63,6 +63,7 @@ class GUI(Tk):
             indexArray = []
             toolsInLevel = []
             for line in commands:
+                line = line.replace('\n','')
                 array = line.split()
                 if(array[0] == 'level'):
                     level = array[1]
@@ -78,11 +79,12 @@ class GUI(Tk):
                     toolsInLevel = []
                 elif(array[0] == 'index:'):
                     indexComm = line.split(' ', 1)
-                    indexArray.append(indexComm[1])
+                    if len(indexComm) != 1:
+                        indexArray.append(indexComm[1])
                 elif(len(array) == 1):
                     toolName = array[0]
                     toolInfo.append(toolName)
-                else:
+                elif(array[0]!= ''):
                     commandArray.append(line)
 
         print(self.tools)
@@ -453,9 +455,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                            file.write("index: " + index + '\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
         self.settings()
@@ -717,9 +720,9 @@ class GUI(Tk):
 
                         self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
                         self.runningTool.place(x=10, y=50+ index*20)
-                        returnCode = subprocess.call(array)
-                        print(returnCode)
-                        #print(array)
+                        #returnCode = subprocess.call(array)
+                        #print(returnCode)
+                        print(array)
 
     def ilerle(self):
         self.progressBar["value"] = self.progressBar["value"] + 1
@@ -804,10 +807,10 @@ class GUI(Tk):
 
         comList = self.inputName1.get().split(";")
         indexList = self.inputName2.get().split(";")
-        for i in range(0,len(comList)):
-            comList[i] += '\n'
-        for i in range(0, len(indexList)):
-            indexList[i] += '\n'
+        #for i in range(0,len(comList)):
+        #    comList[i] += '\n'
+        #for i in range(0, len(indexList)):
+        #    indexList[i] += '\n'
 
         tool = [self.inputName.get(),comList,indexList]
 
@@ -822,10 +825,11 @@ class GUI(Tk):
                 for tool in toolLevel:
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
-                        for index in tool[1]: # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index )
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command )
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
 

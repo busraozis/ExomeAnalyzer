@@ -1,30 +1,22 @@
 level 1
 Fastqc
-index: 
-fhdjsgf sdfhfgsjhdgf sdfhgsj
-end
+index: fhdjsgf sdfhfgsjhdgf sdfhgsjend
 end-of-level
 level 2
 BWA
-index: bwa index -a bwtsw {fa} 
-bwa mem -M -t 16 {fasta} {fastq} {fastq} > [sam]
-end
+index: bwa index -a bwtsw {fa} bwa mem -M -t 16 {fasta} {fastq} {fastq} > [sam]end
 end-of-level
 level 3
 Picard
-index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= {dict}
-java -jar picard.jar SortSam INPUT=  {sam} OUTPUT= [bam] SORT_ORDER=coordinate
-java -jar picard.jar MarkDuplicates INPUT= {bam} OUTPUT= [bam] METRICS_FILE=metrics.txt
-end
+index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= {dict}java -jar picard.jar SortSam INPUT=  {sam} OUTPUT= [bam] SORT_ORDER=coordinatejava -jar picard.jar MarkDuplicates INPUT= {bam} OUTPUT= [bam] METRICS_FILE=metrics.txtend
+Freebayes
+index: end
 end-of-level
 level 4
 Samtools
-index: samtools faidx {fa}
-./samtools view -bS {sam} > [bam]
-./samtools sort {bam} [bam]
-./samtools rmdup {bam} [bam]
-./samtools index {bam}
-end
+index: samtools faidx {fa}./samtools view -bS {sam} > [bam]./samtools sort {bam} [bam]./samtools rmdup {bam} [bam]./samtools index {bam}end
+Gatk
+index: java -jar GenomeAnalysisTK.jarend
 end-of-level
 level 5
 Annovar
@@ -32,6 +24,5 @@ end
 end-of-level
 level 6
 SNPChecker
-java -jar snpchecker.jar
-end
+java -jar snpchecker.jarend
 end-of-level
