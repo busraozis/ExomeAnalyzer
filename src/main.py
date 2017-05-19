@@ -348,9 +348,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                            file.write("index: " + index + '\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
         commandAdded = Label(self.popup2, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
@@ -368,9 +369,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                            file.write("index: " + index + '\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
         commandAdded = Label(self.popup1, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
@@ -403,9 +405,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                            file.write("index: " + index + '\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
 
@@ -424,9 +427,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index)
-                    for command in tool[2]:
-                        file.write(command)
+                            file.write("index: " + index + '\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
 
@@ -630,7 +634,7 @@ class GUI(Tk):
         self.progressDialog.title("Simulation has started!")
         self.progressDialog.geometry("800x500")
         self.progressDialog.resizable(width=False, height=False)
-        self.info = Label(self.progressDialog, text="Çalışan programın ismi ve progress durumu: ")
+        self.info = Label(self.progressDialog, text="Running program: ")
         self.info.place(x=10, y=20)
         self.progressBar = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
         self.progressBar.place(x=50, y=500)
@@ -720,9 +724,12 @@ class GUI(Tk):
 
                         self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
                         self.runningTool.place(x=10, y=50+ index*20)
-                        #returnCode = subprocess.call(array)
-                        #print(returnCode)
-                        print(array)
+                        self.progressInfo = Label(self.progressDialog, text='Running')
+                        self.progressInfo.place(x=300,y=50+ index*20)
+                        returnCode = subprocess.getoutput(array)
+                        print(returnCode)
+                        self.progressInfo.configure(text='Done')
+                        #print(array)
 
     def ilerle(self):
         self.progressBar["value"] = self.progressBar["value"] + 1
@@ -742,7 +749,7 @@ class GUI(Tk):
     def clickForSelectFiles(self):
         cwd = os.getcwd()
         self.filenames =  filedialog.askopenfilenames(initialdir = cwd, title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
-        self.fileList = list(self.filenames)   ##seçilen dosyalar fileList listesinde!!
+        self.fileList = list(self.filenames)   ##dosyalar fileList listesinde!!
 
         #for index in range(len(self.fileList)):
          #   print(self.fileList[index])
@@ -826,10 +833,10 @@ class GUI(Tk):
                     file.write(tool[0] + '\n') #Tool name
                     if tool[1]:
                         for index in tool[1]:  # indexing commands
-                            file.write("index: " + index )
+                            file.write("index: " + index +'\n')
                     if tool[2]:
                         for command in tool[2]:
-                            file.write(command )
+                            file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
 
@@ -856,7 +863,8 @@ if __name__ == "__main__":
     print(returnCode)
     print(subprocess.call(['gunzip Tex84-002-001_S23_L004_R2_001.fastq.gz'], shell=True))
     #returnCode = subprocess.call(['bwa index -a bwtsw /home/tolun/Documents/TEK84-87/all_chr_hg19.fasta'])
-    returnCode = subprocess.Popen(['bwa aln -n 0.01 -t 8 /home/tolun/Documents/TEK84-87/all_chr_hg19.fasta /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.fastq > /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.sai'],stdout=subprocess.PIPE,shell=True)  # COMMAND LINE'A ULASMAMIZI SAGLAYACAK( oluyor, index olmadığı için problemli sadece bwa aln
+    returnCode = subprocess.Popen(['bwa aln -n 0.01 -t 8 /home/tolun/Documents/TEK84-87/all_chr_hg19.fasta /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.fastq > /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.sai'],stdout=subprocess.PIPE,shell=True)
+    # COMMAND LINE'A ULASMAMIZI SAGLAYACAK( oluyor, index olmadığı için problemli sadece bwa aln
     # stdout u da alabiliyoruz
     cmd = 'bwa aln -n 0.01 -t 8 /home/tolun/Documents/TEK84-87/all_chr_hg19.fasta /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.fastq > /home/tolun/Documents/TEX84-87/Tex84-002-001_S23_L004_R1_001.sai'
     p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,close_fds=True)
