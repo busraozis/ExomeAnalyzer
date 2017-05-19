@@ -726,8 +726,17 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50+ index*20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300,y=50+ index*20)
-                        returnCode = subprocess.getoutput(array)
-                        print(returnCode)
+                        returnCode = subprocess.call(array)
+                        if not returnCode:
+                            self.popup = Tk()
+                            self.popup.title("Warning!")
+                            self.popup.geometry("400x100")
+                            self.popup.resizable(width=False, height=False)
+                            self.warning = Label(self.popup,
+                                                 text="Error occured during process.")
+                            self.warning.place(x=10, y=20)
+                            return
+                        #print(returnCode)
                         self.progressInfo.configure(text='Done')
                         #print(array)
 
