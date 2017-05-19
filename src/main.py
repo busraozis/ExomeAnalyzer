@@ -737,7 +737,22 @@ class GUI(Tk):
                                                  text="Error occured during process.")
                             self.warning.place(x=10, y=20)
                             return
-                        #print(returnCode)
+                        if returnCode.find('Permission') != -1:
+                            self.popup = Tk()
+                            self.popup.title("Warning!")
+                            self.popup.geometry("400x100")
+                            self.popup.resizable(width=False, height=False)
+                            self.warning = Label(self.popup, text="You need an authentication!")
+                            self.warning.place(x=10, y=20)
+                            passw = StringVar()
+                            self.password = Entry(self.popup, variable=passw)
+                            self.password.place(x=10, y=20)
+
+                            args = ['sudo', sys.executable] + sys.argv + [os.environ]
+                            # the next line replaces the currently-running process with the sudo
+                            os.execlpe('sudo', *args)
+                            return
+                        print(returnCode)
                         self.progressInfo.configure(text='Done')
                         #print(array)
 
