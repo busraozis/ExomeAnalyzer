@@ -1,12 +1,14 @@
 level 1
 Fastqc
-index: fhdjsgf sdfhfgsjhdgf sdfhgsj
+index:
+zcat {fastq.gz} {fastq.gz} | [fastqc] stdin
+fastqc {fastq.gz} {fastq.gz} –extract --outdir= []
 end
 end-of-level
 level 2
 BWA
 index: bwa index -a bwtsw {fa}
-bwa mem -M -t 16 {fasta} {fastq} {fastq} > [sam]
+bwa mem -M -t 16 {fasta} {fastq.gz} {fastq.gz} > [sam]
 end
 end-of-level
 level 3
@@ -14,6 +16,7 @@ Picard
 index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= {dict}
 java -jar picard.jar SortSam INPUT=  {sam} OUTPUT= [bam] SORT_ORDER=coordinate
 java -jar picard.jar MarkDuplicates INPUT= {bam} OUTPUT= [bam] METRICS_FILE=metrics.txt
+java -jar picard.jar BuildBamIndex INPUT= {bam}
 end
 end-of-level
 level 4
@@ -25,7 +28,8 @@ index: samtools faidx {fa}
 ./samtools index {bam}
 end
 Gatk
-index: java -jar GenomeAnalysisTK.jar
+index:
+java -jar GenomeAnalysisTK.jar -T BaseRecalibator -R {fasta} -I {bam} -knownSites {vcf} -knownSites {vcf} -o [table]
 end
 end-of-level
 level 5

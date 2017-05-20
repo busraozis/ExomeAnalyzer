@@ -30,10 +30,6 @@ class GUI(Tk):
         self.geometry("800x500")
         self.resizable(width=False, height=False)
 
-        #background_image = PhotoImage(file="dna.gif")
-        #self.background_label = Label(self, image=background_image, bd=0)
-        #self.background_label.pack(fill=BOTH, expand=YES)
-
         self.addTool = Button(self, text="Start Simulation", width=25, command=self.toolScreen, bg="#009f9a")
         self.addTool.place(x=270, y =150)
         self.chooseReference = Button(self, text="Choose Reference File",width=25, bg="#009f9a", command=self.chooseRef)
@@ -97,10 +93,11 @@ class GUI(Tk):
 
     def on_enter(self, event):
         self.l2.configure(text="Necessary for some tools before \nrunning for the first time.")
-
     def on_leave(self, enter):
         self.l2.configure(text="")
 
+
+    """File selection"""
     def chooseRef(self):
         cwd = os.getcwd()
         self.reference =  filedialog.askopenfilename(initialdir = cwd,
@@ -108,8 +105,16 @@ class GUI(Tk):
                                                     filetypes = (("fasta","*.fasta"),("fa","*.fa")))
     def chooseVcf(self):
         cwd = os.getcwd()
-        self.vcf =  filedialog.askopenfilename(initialdir = cwd, title = "Choose Vcf Files", filetypes = (("vcf","*.vcf"),("all files","*.*")))
-        self.vcfFiles.append(self.vcf)
+        self.vcfs =  filedialog.askopenfilenames(title = "Choose Vcf Files", filetypes = (("vcf","*.vcf"),("all files","*.*")))
+        self.vcfFiles = list(self.vcfs)
+    def clickForSelectFiles(self):
+        cwd = os.getcwd()
+        self.filenames =  filedialog.askopenfilenames(title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
+        self.fileList = list(self.filenames)   ##dosyalar fileList listesinde!!
+
+    def returnMainMenu(self):
+        self.destroy()
+        self.__init__()
 
     def settings(self):
         self.destroy()
@@ -156,8 +161,15 @@ class GUI(Tk):
         self.addT = Button(self, text="Add New Tool", bg="#ffe7b5", command=self.addToolScreen)
         self.addT.pack(side="bottom")
 
-    """
-    def uptodate(self):
+    def toolScreen(self):
+        if self.reference is None:
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
+            self.warning = Label(self.popup, text="You must choose a reference file!")
+            self.warning.place(x=10, y=20)
+            return
         self.destroy()
         Tk.__init__(self)
         self.grid()
@@ -166,7 +178,300 @@ class GUI(Tk):
         self.geometry("800x500")
         self.resizable(width=False, height=False)
 
-        self.labelframe1 = LabelFrame(self, text="Update Tool")
+        self.labelframe = LabelFrame(self, text="Select Tools")
+        self.labelframe.pack(fill="both", expand="yes")
+
+        index = 0
+        self.checkboxes.clear()
+
+        for key in self.dict.keys() :
+            checkboxConditions = []
+            self.label = Label(self.labelframe, text= "Step " + str(key))
+            self.label.place(x=200, y=50 + (index+1) * 30)
+
+            for item in self.dict[key] :
+                index += 1
+                var = IntVar()
+                if len(self.dict[key]) == 1 and key != 1  and key != 6:
+                    self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
+                    self.cbox1.select()
+                else :
+                    self.cbox1 = Checkbutton(self.labelframe,variable=var)
+
+                checkboxConditions.append(var)
+                self.cbox1.place(x=250, y=50 + index * 30)
+                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
+                self.label1.place(x=280, y=50 + index * 30)
+            self.checkboxes.append(checkboxConditions)
+
+        self.startProgress = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
+        self.startProgress.pack(side="bottom")
+
+        self.chooseInput = Button(self, text="Choose input files", bg = "#ffe7b5", command=self.clickForSelectFiles)
+        self.chooseInput.pack(side="bottom")
+
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
+
+    """This method creates the simulation screen
+            and calls the process method """
+    def startSimulation(self):
+        if len(self.fileList) == 0:
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
+            self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
+            self.warning.place(x=10, y=20)
+            return
+
+        self.progressDialog = Tk()
+        self.progressDialog.title("Simulation has started!")
+        self.progressDialog.geometry("800x500")
+        self.progressDialog.resizable(width=False, height=False)
+        self.info = Label(self.progressDialog, text="Running program: ")
+        self.info.place(x=10, y=20)
+        self.progressBar = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
+        self.progressBar.place(x=50, y=500)
+        self.process()
+        # self.ilerle()
+    """This method parses the commands of the selected tools,
+        assignes appropriate files according to the extentions,
+        and calls subprocess to run the commands """
+    def process(self):
+        level = 0
+        index = 0
+        outputFileNumber = 1
+        for item in self.checkboxes:
+            level += 1
+            number = -1
+            for i in item:
+                number += 1
+                # print(i.get())
+                if (i.get() == 1):
+                    toolLevel = self.dict[level]
+                    tool = toolLevel[number]
+                    commands = tool[2]
+                    for command in commands:
+                        index += 1
+                        countOfFiles = command.count('{fastq}')  # Total number of fastq files in the command
+                        countOfFiles = max(countOfFiles,command.count('{fastq.gz}'))
+                        array = command.split()
+                        # If command has only one fastq, commmand runs repeatedly for every selected input file
+                        if (countOfFiles == 1):
+                            for i in range(0, len(self.fileList)):
+                                for item in array:
+                                    if (item.startswith('{')):
+                                        newitem = item[1:len(item) - 1]
+                                        if (newitem == 'fasta' or newitem == 'fa'):
+                                            array[array.index(item)] = self.reference
+                                        elif (newitem == 'vcf'):
+                                            array[array.index(item)] = self.vcfFiles[0]
+                                        elif (newitem == 'fastq' or newitem == 'fastq.gz'):
+                                            array[array.index(item)] = self.fileList[i]
+                                        else:
+                                            array[array.index(item)] = self.fileList[0] + str(
+                                                outputFileNumber - 1) + '.' + newitem
+                                            outputFileNumber += 1
+                                    elif (item.startswith('[')):
+                                        newitem = item[1:len(item) - 1]
+                                        # Output file always takes the first files name + its extention
+                                        outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
+                                        outputFileNumber += 1
+                                        array[array.index(item)] = outputFile
+                        elif (countOfFiles > 1):
+                            fileNumber = 0
+                            for item in array:
+                                if (item.startswith('{')):
+                                    newitem = item[1:len(item) - 1]
+                                    if (newitem == 'fasta' or newitem == 'fa'):
+                                        array[array.index(item)] = self.reference
+                                    elif (newitem == 'vcf'):
+                                        array[array.index(item)] = self.vcfFiles[0]
+                                    elif (newitem == 'fastq' or newitem == 'fastq.gz'):
+                                        array[array.index(item)] = self.fileList[fileNumber]
+                                        fileNumber += 1
+                                    else:
+                                        # Probably Wrong Solution!!!!!
+                                        array[array.index(item)] = self.fileList[0] + str(
+                                            outputFileNumber - 2) + '.' + newitem
+                                        outputFileNumber += 1
+                                elif (item.startswith('[')):
+                                    newitem = item[1:len(item) - 1]
+                                    # Output file always takes the first files name + its extention
+                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
+                                    outputFileNumber += 1
+                                    array[array.index(item)] = outputFile
+                        else:
+                            for item in array:
+                                if (item.startswith('{')):
+                                    newitem = item[1:len(item) - 1]
+                                    if (newitem == 'fasta' or newitem == 'fa'):
+                                        array[array.index(item)] = self.reference
+                                    elif (newitem == 'vcf'):
+                                        array[array.index(item)] = self.vcfFiles[0]
+                                    else:
+                                        array[array.index(item)] = self.fileList[0] + str(
+                                            outputFileNumber - 1) + '.' + newitem
+                                elif (item.startswith('[')):
+                                    newitem = item[1:len(item) - 1]
+                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
+                                    outputFileNumber += 1
+                                    array[array.index(item)] = outputFile
+
+                        self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
+                        self.runningTool.place(x=10, y=50 + index * 20)
+                        self.progressInfo = Label(self.progressDialog, text='Running')
+                        self.progressInfo.place(x=300, y=50 + index * 20)
+                        returnCode = subprocess.getoutput(array)
+
+                        if returnCode.find('Error') != -1:
+                            self.popup = Tk()
+                            self.popup.title("Warning!")
+                            self.popup.geometry("400x100")
+                            self.popup.resizable(width=False, height=False)
+                            self.warning = Label(self.popup,
+                                                 text="Error occured during process.")
+                            self.warning.place(x=10, y=20)
+                            return
+                        if returnCode.find('Permission') != -1:
+                            self.popup = Tk()
+                            self.popup.title("Warning!")
+                            self.popup.geometry("400x100")
+                            self.popup.resizable(width=False, height=False)
+                            self.warning = Label(self.popup, text="You need an authentication!")
+                            self.warning.place(x=10, y=20)
+                            passw = StringVar()
+                            # self.password = Entry(self.popup, variable=passw)
+                            # self.password.place(x=10, y=20)
+
+                            args = ['sudo', sys.executable] + sys.argv + [os.environ]
+                            # the next line replaces the currently-running process with the sudo
+                            os.execlpe('sudo', *args)
+                            return
+                        print(returnCode)
+                        self.progressInfo.configure(text='Done')
+                        # print(array)
+    def ilerle(self):
+        self.progressBar["value"] = self.progressBar["value"] + 1
+        if self.progressBar["value"] < 100:
+            # read more bytes after 100 ms
+            self.after(100, self.ilerle)
+
+        else:
+            self.finish = Label(self.progressDialog,
+                                text="Simulation finished successfully!\n Check output directory to see the result!")
+            self.finish.place(x=50, y=100)
+
+        """for i in range(len(self.checkboxes)):
+            self.dummy = Label(self.progressDialog, text=self.checkboxes[i].get())
+            self.dummy.place(x=30, y=50+i*50)"""
+
+    """Indexing functions"""
+    def indexTools(self):
+        if self.reference is None:
+            self.popup = Tk()
+            self.popup.title("Warning!")
+            self.popup.geometry("400x100")
+            self.popup.resizable(width=False, height=False)
+            self.warning = Label(self.popup, text="You must choose a reference file!")
+            self.warning.place(x=10, y=20)
+            return
+
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        self.labelframe = LabelFrame(self, text="Select Tools for Indexing")
+        self.labelframe.pack(fill="both", expand="yes")
+
+        index = 0
+        self.checkboxes.clear()
+
+        for key in self.dict.keys():
+
+            checkboxConditions = []
+            self.label = Label(self.labelframe, text="Step " + str(key))
+            # self.label.grid(column=0, row= index)
+            self.label.place(x=200, y=50 + (index + 1) * 30)
+
+            for item in self.dict[key]:
+                index += 1
+                var = IntVar()
+                if not item[1]:
+                    self.cbox1 = Checkbutton(self.labelframe, state=DISABLED)
+                else:
+                    self.cbox1 = Checkbutton(self.labelframe, variable=var)
+                checkboxConditions.append(var)
+                self.cbox1.place(x=250, y=50 + index * 30)
+                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
+                self.label1.place(x=280, y=50 + index * 30)
+            self.checkboxesForIndex.append(checkboxConditions)
+
+        self.startProgress = Button(self, text="Start Indexing \u279C", bg="#009fff", command=self.indexing)
+        self.startProgress.pack(side="bottom")
+
+        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
+        self.returnMain.pack(side="bottom")
+    def indexing(self):
+        self.indexing = Tk()
+        self.indexing.title("Index")
+        self.indexing.geometry("800x500")
+        self.indexing.resizable(width=False, height=False)
+        self.info = Label(self.indexing, text="Indexing has started.")
+        self.info.place(x=10, y=20)
+        self.indexProcess()
+    def indexProcess(self):
+        level = 0
+        index = 0
+        outputFileNumber = 1
+        for item in self.checkboxesForIndex:
+            level += 1
+            number = -1
+            for i in item:
+                number += 1
+                #print(i.get())
+                if( i.get() == 1 ):
+                    toolLevel = self.dict[level]
+                    tool = toolLevel[number]
+                    indexcommands = tool[1]
+                    for command in indexcommands:
+                        index += 1
+                        array = command.split()
+                        for item in array:
+                            if (item.startswith('{')):
+                                newitem = item[1:len(item) - 1]
+                                if (newitem == 'fasta' or newitem == 'fa'):
+                                    array[array.index(item)] = self.reference
+                                elif (newitem == 'vcf'):
+                                    array[array.index(item)] = self.vcfFiles[0]
+                            elif (item.startswith('[')):
+                                newitem = item[1:len(item) - 1]
+                                ref = self.reference.split('.')
+                                outputFile = ref[0] + '.' + newitem
+                                array[array.index(item)] = outputFile
+
+                        self.runningTool = Label(self, text=array[0] + ' ' + array[1])
+                        self.runningTool.place(x=10, y=50+ index*20)
+                        #returnCode = subprocess.call(array)
+                        #print(returnCode)
+                        print(array)
+
+    """Add tool functions"""
+    def addToolScreen(self):
+        self.destroy()
+        Tk.__init__(self)
+        self.grid()
+
+        self.title("Exome Analyzer")
+        self.geometry("800x500")
+        self.resizable(width=False, height=False)
+
+        self.labelframe1 = LabelFrame(self, text="Add New Tool")
         self.labelframe1.pack(fill="both", expand="yes")
 
         args = ['Tool Name', 'Indexing Command','Commands', 'Input File Format', 'Output File Format', 'Step']
@@ -175,8 +480,7 @@ class GUI(Tk):
             self.arg = Label(self, text= arg + ": ")
             self.arg.place(x=100, y=90 + i*30)
             if i == 0:
-                var = StringVar()
-                self.inputName = Message(self, width=35, text='tool')    #TOOL NAME
+                self.inputName = Entry(self, width=35)    #TOOL NAME
                 self.inputName.place(x=250, y=90 + i * 30)
             elif i == 1:
                 self.inputName1 = Entry(self, width=35)   #INDEX COMMAND
@@ -211,7 +515,49 @@ class GUI(Tk):
         self.addButton.pack()
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
-    """
+    def addButtonClick(self):
+
+        level = int(self.inputName5.get())
+
+        comList = self.inputName1.get().split(";")
+        indexList = self.inputName2.get().split(";")
+        #for i in range(0,len(comList)):
+        #    comList[i] += '\n'
+        #for i in range(0, len(indexList)):
+        #    indexList[i] += '\n'
+
+        tool = [self.inputName.get(),comList,indexList]
+
+        if len(self.inputName.get()) != 0 :
+            self.dict[level].append(tool)
+
+        #Rewrite the content
+        with open(self.commandFile, 'w') as file:
+            for level in range(1,self.levelNumber+1):
+                toolLevel = self.dict[level]
+                file.write("level " + str(level) + "\n") # Level name
+                for tool in toolLevel:
+                    file.write(tool[0] + '\n') #Tool name
+                    if tool[1]:
+                        for index in tool[1]:  # indexing commands
+                            file.write("index: " + index +'\n')
+                    if tool[2]:
+                        for command in tool[2]:
+                            file.write(command + '\n')
+                    file.write('end' + '\n')
+                file.write('end-of-level' + '\n')
+
+        #print(self.tools)
+
+        self.labelframe1.destroy()
+        self.addButton.destroy()
+        #self.button.destroy()
+        self.list.destroy()
+        self.inputName.destroy()
+
+        self.settings()
+
+    """Update tool functions"""
     def updateTool(self):
         #Open a new update page
         self.destroy()
@@ -311,7 +657,6 @@ class GUI(Tk):
 
         self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
         self.returnMain.pack(side="bottom")
-
     def addCommand(self,level,number):
         self.popup1 = Tk()
         self.popup1.title("Add New Indexing Command")
@@ -323,7 +668,6 @@ class GUI(Tk):
         self.enterCommand.place(x=10, y=50)
         saveButton = Button(self.popup1, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeCommand(level,number))
         saveButton.place(x=10, y=80)
-
     def addIndexCommand(self,level,number):
         self.popup2 = Tk()
         self.popup2.title("Add New Indexing Command")
@@ -335,7 +679,6 @@ class GUI(Tk):
         self.enterCommand1.place(x=10, y=50)
         saveButton = Button(self.popup2, text="Save Command", bg="#078a69", command=lambda level=level, number=number: self.writeIndexCommand(level,number))
         saveButton.place(x=10, y=80)
-
     def writeIndexCommand(self, level, number):
         newCommand = self.enterCommand1.get()
         self.dict[level][number][1].append("index: "+newCommand+"\n")
@@ -356,7 +699,6 @@ class GUI(Tk):
                 file.write('end-of-level' + '\n')
         commandAdded = Label(self.popup2, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
         commandAdded.place(x=10, y=110)
-
     def writeCommand(self, level, number):
         newCommand = self.enterCommand.get()
         self.dict[level][number][2].append(newCommand+"\n")
@@ -377,19 +719,14 @@ class GUI(Tk):
                 file.write('end-of-level' + '\n')
         commandAdded = Label(self.popup1, text="New command is added successfully!", fg="#009f9a", font="Verdana 10 bold")
         commandAdded.place(x=10, y=110)
-
     def increaseOrder(self):
         print("increase")
-
     def increaseOrderIndex(self, n):
         print("increaseIndex "+n)
-
     def decreaseOrder(self):
         print("decrease")
-
     def decreaseOrderIndex(self, n):
         print("decreaseIndex "+n)
-
     def removeIndexCommand(self, n, level, number):
         self.removeComm[n].destroy()
         self.increaseOrdIndex[n].destroy()
@@ -411,7 +748,6 @@ class GUI(Tk):
                             file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
-
     def removeCommand(self, n, level, number):
         self.removeComm1[n].destroy()
         self.increaseOrdCommand[n].destroy()
@@ -434,6 +770,7 @@ class GUI(Tk):
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
 
+    """Delete tool"""
     def deleteTool(self):
         #Delete the tool from dictionary
         level = 0
@@ -465,414 +802,6 @@ class GUI(Tk):
                             file.write(command + '\n')
                     file.write('end' + '\n')
                 file.write('end-of-level' + '\n')
-        self.settings()
-
-    def indexTools(self):
-        if self.reference is None:
-            self.popup = Tk()
-            self.popup.title("Warning!")
-            self.popup.geometry("400x100")
-            self.popup.resizable(width=False, height=False)
-            self.warning = Label(self.popup, text="You must choose a reference file!")
-            self.warning.place(x=10, y=20)
-            return
-
-        self.destroy()
-        Tk.__init__(self)
-        self.grid()
-
-        self.title("Exome Analyzer")
-        self.geometry("800x500")
-        self.resizable(width=False, height=False)
-
-        self.labelframe = LabelFrame(self, text="Select Tools for Indexing")
-        self.labelframe.pack(fill="both", expand="yes")
-
-        index = 0
-        self.checkboxes.clear()
-
-        for key in self.dict.keys():
-
-            checkboxConditions = []
-            self.label = Label(self.labelframe, text="Step " + str(key))
-            # self.label.grid(column=0, row= index)
-            self.label.place(x=200, y=50 + (index + 1) * 30)
-
-            for item in self.dict[key]:
-                index += 1
-                var = IntVar()
-                if not item[1]:
-                    self.cbox1 = Checkbutton(self.labelframe, state=DISABLED)
-                else:
-                    self.cbox1 = Checkbutton(self.labelframe, variable=var)
-                checkboxConditions.append(var)
-                self.cbox1.place(x=250, y=50 + index * 30)
-                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
-                self.label1.place(x=280, y=50 + index * 30)
-            self.checkboxesForIndex.append(checkboxConditions)
-
-        self.startProgress = Button(self, text="Start Indexing \u279C", bg="#009fff", command=self.indexing)
-        self.startProgress.pack(side="bottom")
-
-        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
-        self.returnMain.pack(side="bottom")
-
-    def indexing(self):
-        self.indexing = Tk()
-        self.indexing.title("Index")
-        self.indexing.geometry("800x500")
-        self.indexing.resizable(width=False, height=False)
-        self.info = Label(self.indexing, text="Indexing has started.")
-        self.info.place(x=10, y=20)
-        self.indexProcess()
-
-    def indexProcess(self):
-        level = 0
-        index = 0
-        outputFileNumber = 1
-        for item in self.checkboxesForIndex:
-            level += 1
-            number = -1
-            for i in item:
-                number += 1
-                #print(i.get())
-                if( i.get() == 1 ):
-                    toolLevel = self.dict[level]
-                    tool = toolLevel[number]
-                    indexcommands = tool[1]
-                    for command in indexcommands:
-                        index += 1
-                        array = command.split()
-                        for item in array:
-                            if (item.startswith('{')):
-                                newitem = item[1:len(item) - 1]
-                                if (newitem == 'fasta' or newitem == 'fa'):
-                                    array[array.index(item)] = self.reference
-                                elif (newitem == 'vcf'):
-                                    array[array.index(item)] = self.vcfFiles[0]
-                            elif (item.startswith('[')):
-                                newitem = item[1:len(item) - 1]
-                                ref = self.reference.split('.')
-                                outputFile = ref[0] + '.' + newitem
-                                array[array.index(item)] = outputFile
-
-                        self.runningTool = Label(self, text=array[0] + ' ' + array[1])
-                        self.runningTool.place(x=10, y=50+ index*20)
-                        #returnCode = subprocess.call(array)
-                        #print(returnCode)
-                        print(array)
-
-    def toolScreen(self):
-        if self.reference is None:
-            self.popup = Tk()
-            self.popup.title("Warning!")
-            self.popup.geometry("400x100")
-            self.popup.resizable(width=False, height=False)
-            self.warning = Label(self.popup, text="You must choose a reference file!")
-            self.warning.place(x=10, y=20)
-            return
-        self.destroy()
-        Tk.__init__(self)
-        self.grid()
-
-        self.title("Exome Analyzer")
-        self.geometry("800x500")
-        self.resizable(width=False, height=False)
-
-        self.labelframe = LabelFrame(self, text="Select Tools")
-        self.labelframe.pack(fill="both", expand="yes")
-
-        index = 0
-        self.checkboxes.clear()
-
-        for key in self.dict.keys() :
-            checkboxConditions = []
-            self.label = Label(self.labelframe, text= "Step " + str(key))
-            self.label.place(x=200, y=50 + (index+1) * 30)
-
-            for item in self.dict[key] :
-                index += 1
-                var = IntVar()
-                if len(self.dict[key]) == 1 and key != 1  and key != 6:
-                    self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
-                    self.cbox1.select()
-                else :
-                    self.cbox1 = Checkbutton(self.labelframe,variable=var)
-
-                checkboxConditions.append(var)
-                self.cbox1.place(x=250, y=50 + index * 30)
-                self.label1 = Label(self.labelframe, text=item[0], relief=RAISED, bg="#009f9a", width=25)
-                self.label1.place(x=280, y=50 + index * 30)
-            self.checkboxes.append(checkboxConditions)
-
-        self.startProgress = Button(self, text="Start Progress \u279C", bg="#009fff", command=self.startSimulation)
-        self.startProgress.pack(side="bottom")
-
-        self.chooseInput = Button(self, text="Choose input files", bg = "#ffe7b5", command=self.clickForSelectFiles)
-        self.chooseInput.pack(side="bottom")
-
-        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
-        self.returnMain.pack(side="bottom")
-
-    def returnMainMenu(self):
-        self.destroy()
-        self.__init__()
-
-    """This method creates the simulation screen
-            and calls the process method """
-    def startSimulation(self):
-        if len(self.fileList) == 0 :
-            self.popup = Tk()
-            self.popup.title("Warning!")
-            self.popup.geometry("400x100")
-            self.popup.resizable(width=False, height=False)
-            self.warning = Label(self.popup, text="You must choose at least one input file to start progress!")
-            self.warning.place(x=10, y=20)
-            return
-
-        self.progressDialog = Tk()
-        self.progressDialog.title("Simulation has started!")
-        self.progressDialog.geometry("800x500")
-        self.progressDialog.resizable(width=False, height=False)
-        self.info = Label(self.progressDialog, text="Running program: ")
-        self.info.place(x=10, y=20)
-        self.progressBar = ttk.Progressbar(self.progressDialog, orient=HORIZONTAL, length=500, mode='determinate')
-        self.progressBar.place(x=50, y=500)
-        self.process()
-        #self.ilerle()
-
-
-    """This method parses the commands of the selected tools,
-        assignes appropriate files according to the extentions,
-        and calls subprocess to run the commands """
-    def process(self):
-        level = 0
-        index = 0
-        outputFileNumber = 1
-        for item in self.checkboxes:
-            level += 1
-            number = -1
-            for i in item:
-                number += 1
-                #print(i.get())
-                if( i.get() == 1 ):
-                    toolLevel = self.dict[level]
-                    tool = toolLevel[number]
-                    commands = tool[2]
-                    for command in commands:
-                        index += 1
-                        countOfFiles = command.count('{fastq}') # Total number of fastq files in the command
-                        array = command.split()
-                        #If command has only one fastq, commmand runs repeatedly for every selected input file
-                        if(countOfFiles == 1):
-                            for i in range(0,len(self.fileList)):
-                                for item in array:
-                                    if (item.startswith('{')):
-                                        newitem = item[1:len(item) - 1]
-                                        if (newitem == 'fasta' or newitem == 'fa'):
-                                            array[array.index(item)] = self.reference
-                                        elif (newitem == 'vcf'):
-                                            array[array.index(item)] = self.vcfFiles[0]
-                                        elif (newitem == 'fastq'):
-                                            array[array.index(item)] = self.fileList[i]
-                                        else:
-                                            array[array.index(item)] = self.fileList[0] + str(outputFileNumber - 1) + '.' + newitem
-                                            outputFileNumber += 1
-                                    elif (item.startswith('[')):
-                                        newitem = item[1:len(item) - 1]
-                                        #Output file always takes the first files name + its extention
-                                        outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
-                                        outputFileNumber += 1
-                                        array[array.index(item)] = outputFile
-                        elif(countOfFiles > 1):
-                            fileNumber = 0
-                            for item in array:
-                                if(item.startswith('{')):
-                                    newitem = item[1:len(item)-1]
-                                    if(newitem == 'fasta' or newitem == 'fa'):
-                                        array[array.index(item)] = self.reference
-                                    elif(newitem == 'vcf'):
-                                        array[array.index(item)] = self.vcfFiles[0]
-                                    elif(newitem == 'fastq'):
-                                        array[array.index(item)] = self.fileList[fileNumber]
-                                        fileNumber += 1
-                                    else:
-                                        #Probably Wrong Solution!!!!!
-                                        array[array.index(item)] = self.fileList[0]+ str(outputFileNumber-2) + '.' + newitem
-                                        outputFileNumber += 1
-                                elif(item.startswith('[')):
-                                    newitem = item[1:len(item) - 1]
-                                    # Output file always takes the first files name + its extention
-                                    outputFile = self.fileList[0] + str(outputFileNumber) +'.' + newitem
-                                    outputFileNumber +=1
-                                    array[array.index(item)] = outputFile
-                        else:
-                            for item in array:
-                                if (item.startswith('{')):
-                                    newitem = item[1:len(item) - 1]
-                                    if (newitem == 'fasta' or newitem == 'fa'):
-                                        array[array.index(item)] = self.reference
-                                    elif (newitem == 'vcf'):
-                                        array[array.index(item)] = self.vcfFiles[0]
-                                    else:
-                                        array[array.index(item)] = self.fileList[0] + str(outputFileNumber - 1) + '.' + newitem
-                                elif (item.startswith('[')):
-                                    newitem = item[1:len(item) - 1]
-                                    outputFile = self.fileList[0] + str(outputFileNumber) + '.' + newitem
-                                    outputFileNumber += 1
-                                    array[array.index(item)] = outputFile
-
-                        self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
-                        self.runningTool.place(x=10, y=50+ index*20)
-                        self.progressInfo = Label(self.progressDialog, text='Running')
-                        self.progressInfo.place(x=300,y=50+ index*20)
-                        returnCode = subprocess.getoutput(array)
-
-                        if returnCode.find('Error') != -1:
-                            self.popup = Tk()
-                            self.popup.title("Warning!")
-                            self.popup.geometry("400x100")
-                            self.popup.resizable(width=False, height=False)
-                            self.warning = Label(self.popup,
-                                                 text="Error occured during process.")
-                            self.warning.place(x=10, y=20)
-                            return
-                        if returnCode.find('Permission') != -1:
-                            self.popup = Tk()
-                            self.popup.title("Warning!")
-                            self.popup.geometry("400x100")
-                            self.popup.resizable(width=False, height=False)
-                            self.warning = Label(self.popup, text="You need an authentication!")
-                            self.warning.place(x=10, y=20)
-                            passw = StringVar()
-                            self.password = Entry(self.popup, variable=passw)
-                            self.password.place(x=10, y=20)
-
-                            args = ['sudo', sys.executable] + sys.argv + [os.environ]
-                            # the next line replaces the currently-running process with the sudo
-                            os.execlpe('sudo', *args)
-                            return
-                        print(returnCode)
-                        self.progressInfo.configure(text='Done')
-                        #print(array)
-
-    def ilerle(self):
-        self.progressBar["value"] = self.progressBar["value"] + 1
-        if self.progressBar["value"] < 100:
-            # read more bytes after 100 ms
-            self.after(100, self.ilerle)
-
-        else:
-            self.finish = Label(self.progressDialog, text="Simulation finished successfully!\n Check output directory to see the result!")
-            self.finish.place(x=50, y=100)
-
-        """for i in range(len(self.checkboxes)):
-            self.dummy = Label(self.progressDialog, text=self.checkboxes[i].get())
-            self.dummy.place(x=30, y=50+i*50)"""
-
-
-    def clickForSelectFiles(self):
-        cwd = os.getcwd()
-        self.filenames =  filedialog.askopenfilenames(initialdir = cwd, title = "Choose input file",filetypes = (("fastq","*.fastq"),("fastq.gz","*.fastq.gz"),("all files","*.*")))
-        self.fileList = list(self.filenames)   ##dosyalar fileList listesinde!!
-
-        #for index in range(len(self.fileList)):
-         #   print(self.fileList[index])
-
-    def addToolScreen(self):
-        self.destroy()
-        Tk.__init__(self)
-        self.grid()
-
-        self.title("Exome Analyzer")
-        self.geometry("800x500")
-        self.resizable(width=False, height=False)
-
-        self.labelframe1 = LabelFrame(self, text="Add New Tool")
-        self.labelframe1.pack(fill="both", expand="yes")
-
-        args = ['Tool Name', 'Indexing Command','Commands', 'Input File Format', 'Output File Format', 'Step']
-        i = 0
-        for arg in args:
-            self.arg = Label(self, text= arg + ": ")
-            self.arg.place(x=100, y=90 + i*30)
-            if i == 0:
-                self.inputName = Entry(self, width=35)    #TOOL NAME
-                self.inputName.place(x=250, y=90 + i * 30)
-            elif i == 1:
-                self.inputName1 = Entry(self, width=35)   #INDEX COMMAND
-                self.inputName1.place(x=250, y=90 + i * 30)
-            elif i == 2:
-                self.inputName2 = Entry(self, width=35)   #COMMANDS
-                self.inputName2.place(x=250, y=90 + i * 30)
-            elif i == 3:
-                self.inputName3 = Entry(self, width=35)   #INPUT FILE FORMAT
-                self.inputName3.place(x=250, y=90 + i * 30)
-            elif i == 4:
-                self.inputName4 = Entry(self, width=35)   #OUTPUT FILE FORMAT
-                self.inputName4.place(x=250, y=90 + i * 30)
-            elif i == 5:
-                self.inputName5 = Spinbox(self,from_=1, to=len(self.dict), width= 2)
-                self.inputName5.place(x=250, y=90 + i * 30)
-            else:
-                self.inputName6 = Entry(self, width=35)
-                self.inputName6.place(x=250, y=90 + i * 30)
-            i += 1
-
-        self.list = Listbox(self, width= 50, height= 6)
-        self.list.insert(END, "Hint")
-        self.list.insert(END, "Step 1: Quality Control")
-        self.list.insert(END, "Step 2: Initial Alingment")
-        self.list.insert(END, "Step 3: Removing Duplicates")
-        self.list.insert(END, "Step 4: Recalibration, Calling and Filtering Variants")
-        self.list.insert(END, "Step 5: Annovar")
-        self.list.pack()
-
-        self.addButton = Button(self, text="Add", width=15, command=self.addButtonClick)
-        self.addButton.pack()
-        self.returnMain = Button(self, text="Return to Main Menu \u279C", bg="#009fff", command=self.returnMainMenu)
-        self.returnMain.pack(side="bottom")
-
-    def addButtonClick(self):
-
-        level = int(self.inputName5.get())
-
-        comList = self.inputName1.get().split(";")
-        indexList = self.inputName2.get().split(";")
-        #for i in range(0,len(comList)):
-        #    comList[i] += '\n'
-        #for i in range(0, len(indexList)):
-        #    indexList[i] += '\n'
-
-        tool = [self.inputName.get(),comList,indexList]
-
-        if len(self.inputName.get()) != 0 :
-            self.dict[level].append(tool)
-
-        #Rewrite the content
-        with open(self.commandFile, 'w') as file:
-            for level in range(1,self.levelNumber+1):
-                toolLevel = self.dict[level]
-                file.write("level " + str(level) + "\n") # Level name
-                for tool in toolLevel:
-                    file.write(tool[0] + '\n') #Tool name
-                    if tool[1]:
-                        for index in tool[1]:  # indexing commands
-                            file.write("index: " + index +'\n')
-                    if tool[2]:
-                        for command in tool[2]:
-                            file.write(command + '\n')
-                    file.write('end' + '\n')
-                file.write('end-of-level' + '\n')
-
-        #print(self.tools)
-
-        self.labelframe1.destroy()
-        self.addButton.destroy()
-        #self.button.destroy()
-        self.list.destroy()
-        self.inputName.destroy()
-
         self.settings()
 
 
