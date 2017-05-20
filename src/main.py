@@ -83,7 +83,7 @@ class GUI(Tk):
                 elif(array[0]!= ''):
                     commandArray.append(line)
 
-        print(self.tools)
+        #print(self.tools)
 
         for i in range(1, self.levelNumber+1):
             self.dict[i] = self.tools[i-1]
@@ -256,6 +256,7 @@ class GUI(Tk):
                         index += 1
                         countOfFiles = command.count('{fastq}')  # Total number of fastq files in the command
                         countOfFiles = max(countOfFiles,command.count('{fastq.gz}'))
+                        vcfNum = 0
                         array = command.split()
                         # If command has only one fastq, commmand runs repeatedly for every selected input file
                         if (countOfFiles == 1):
@@ -266,7 +267,8 @@ class GUI(Tk):
                                         if (newitem == 'fasta' or newitem == 'fa'):
                                             array[array.index(item)] = self.reference
                                         elif (newitem == 'vcf'):
-                                            array[array.index(item)] = self.vcfFiles[0]
+                                            array[array.index(item)] = self.vcfFiles[vcfNum]
+                                            vcfNum += 1
                                         elif (newitem == 'fastq' or newitem == 'fastq.gz'):
                                             array[array.index(item)] = self.fileList[i]
                                         else:
@@ -287,7 +289,8 @@ class GUI(Tk):
                                     if (newitem == 'fasta' or newitem == 'fa'):
                                         array[array.index(item)] = self.reference
                                     elif (newitem == 'vcf'):
-                                        array[array.index(item)] = self.vcfFiles[0]
+                                        array[array.index(item)] = self.vcfFiles[vcfNum]
+                                        vcfNum += 1
                                     elif (newitem == 'fastq' or newitem == 'fastq.gz'):
                                         array[array.index(item)] = self.fileList[fileNumber]
                                         fileNumber += 1
@@ -309,7 +312,8 @@ class GUI(Tk):
                                     if (newitem == 'fasta' or newitem == 'fa'):
                                         array[array.index(item)] = self.reference
                                     elif (newitem == 'vcf'):
-                                        array[array.index(item)] = self.vcfFiles[0]
+                                        array[array.index(item)] = self.vcfFiles[vcfNum]
+                                        vcfNum += 1
                                     else:
                                         array[array.index(item)] = self.fileList[0] + str(
                                             outputFileNumber - 1) + '.' + newitem
@@ -319,11 +323,12 @@ class GUI(Tk):
                                     outputFileNumber += 1
                                     array[array.index(item)] = outputFile
 
-                        self.runningTool = Label(self.progressDialog, text=array[0] + ' ' + array[1])
+                        self.runningTool = Label(self.progressDialog, text=tool[0])
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        returnCode = subprocess.getoutput(array)
+                        #returnCode = subprocess.getoutput(array)
+                        returnCode = str(array)
 
                         if returnCode.find('Error') != -1:
                             self.popup = Tk()

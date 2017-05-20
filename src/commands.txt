@@ -1,8 +1,7 @@
 level 1
 Fastqc
 index:
-zcat {fastq.gz} {fastq.gz} | [fastqc] stdin
-fastqc {fastq.gz} {fastq.gz} –extract --outdir= []
+fastqc {fastq} {fastq}
 end
 end-of-level
 level 2
@@ -13,7 +12,7 @@ end
 end-of-level
 level 3
 Picard
-index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= {dict}
+index: java -jar picard.jar CreateSequenceDictionary REFERENCE= {fa}  OUTPUT= [dict]
 java -jar picard.jar SortSam INPUT=  {sam} OUTPUT= [bam] SORT_ORDER=coordinate
 java -jar picard.jar MarkDuplicates INPUT= {bam} OUTPUT= [bam] METRICS_FILE=metrics.txt
 java -jar picard.jar BuildBamIndex INPUT= {bam}
