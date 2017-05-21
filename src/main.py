@@ -40,7 +40,8 @@ class GUI(Tk):
         self.submitButton = Button(self, text="Settings", width=25, bg = "#009f9a", command=self.settings)
         self.submitButton.place(x=270, y =270)
 
-        self.l1 = Label(self, text="?")
+        u = chr(8505)
+        self.l1 = Label(self, text=u)
         self.l2 = Label(self, text="", width=40)
         self.l1.place(x=500, y =240)
         self.l2.place(x=510, y =240)
@@ -632,6 +633,7 @@ class GUI(Tk):
                 for commands in self.updatedToolCommands:
                     if(not commands== ''):
                         self.commands.append(Label(self, text=self.updatedToolCommands[j]))
+                        print(len(self.updatedToolCommands[j]))
                         self.commands[j].place(x=250, y=90 + i * (j+2) * 30)
                         self.increaseOrdCommand.append(Button(self, text="+", bg="#ffe7b5", width=2, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrder(j,updatedToolLevel, n)))
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
@@ -639,7 +641,6 @@ class GUI(Tk):
                         self.decreaseOrdCommand[j].place(x=625, y=90 + i * (j+2) * 30)
                         self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.removeCommand(j,updatedToolLevel, n)))
                         self.removeComm1[j].place(x=675, y=90 + i * (j+2) * 30)
-                        #self.removeComm.place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
                 self.addComm = Button(self, text="Add New Command", bg="#078a69", command=lambda updatedToolLevel=self.updatedToolLevel,n=self.n: self.addCommand(updatedToolLevel, n))
                 self.addComm.place(x=600, y = 90 + i * (j+2) * 30)
