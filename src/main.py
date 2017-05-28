@@ -618,10 +618,10 @@ class GUI(Tk):
                 for indexCommands in self.updatedToolIndexCommand:
                     self.indexCommands.append(Label(self, text=self.updatedToolIndexCommand[j]) )     # INDEX COMMAND
                     self.indexCommands[j].place(x=250, y=90 + i * (j+1) * 30)
-                    self.increaseOrdIndex.append(Button(self, text="+", bg="#ffe7b5", width=2,command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrderIndex(j,updatedToolLevel, n)))
+                    self.increaseOrdIndex.append(Button(self, text="+", bg="#ffe7b5", width=1,command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrderIndex(j,updatedToolLevel, n)))
                     self.increaseOrdIndex[j].place(x=600, y=90 + i * (j+1) * 30)
-                    self.decreaseOrdIndex.append(Button(self, text="-", bg="#ffe7b5", width=2,command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.decreaseOrderIndex(j,updatedToolLevel, n)))
-                    self.decreaseOrdIndex[j].place(x=625, y=90 + i * (j+1) * 30)
+                    self.decreaseOrdIndex.append(Button(self, text="-", bg="#ffe7b5", width=1,command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.decreaseOrderIndex(j,updatedToolLevel, n)))
+                    self.decreaseOrdIndex[j].place(x=635, y=90 + i * (j+1) * 30)
                     self.removeComm.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.removeIndexCommand(j, updatedToolLevel, n)))
                     self.removeComm[j].place(x=675, y=90 + i * (j+1) * 30)
                     #self.removeComm.place(x=675, y=90 + i * (j+1) * 30)
@@ -638,10 +638,10 @@ class GUI(Tk):
                         self.commands.append(Label(self, text=self.updatedToolCommands[j]))
                         print(len(self.updatedToolCommands[j]))
                         self.commands[j].place(x=250, y=90 + i * (j+2) * 30)
-                        self.increaseOrdCommand.append(Button(self, text="+", bg="#ffe7b5", width=2, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrder(j,updatedToolLevel, n)))
+                        self.increaseOrdCommand.append(Button(self, text="+", bg="#ffe7b5", width=1, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrder(j,updatedToolLevel, n)))
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
-                        self.decreaseOrdCommand.append(Button(self, text="-", bg="#ffe7b5", width=2, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.decreaseOrder(j,updatedToolLevel, n)))
-                        self.decreaseOrdCommand[j].place(x=625, y=90 + i * (j+2) * 30)
+                        self.decreaseOrdCommand.append(Button(self, text="-", bg="#ffe7b5", width=1, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.decreaseOrder(j,updatedToolLevel, n)))
+                        self.decreaseOrdCommand[j].place(x=635, y=90 + i * (j+2) * 30)
                         self.removeComm1.append(Button(self, text="Remove", bg="#9e0000", command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.removeCommand(j,updatedToolLevel, n)))
                         self.removeComm1[j].place(x=675, y=90 + i * (j+2) * 30)
                     j += 1
