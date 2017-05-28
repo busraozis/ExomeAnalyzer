@@ -427,7 +427,7 @@ class GUI(Tk):
         self.indexing.title("Index")
         self.indexing.geometry("800x500")
         self.indexing.resizable(width=False, height=False)
-        self.info = Label(self.indexing, text="Indexing has started.")
+        self.info = Label(self.indexing, text="Running program: ")
         self.info.place(x=10, y=20)
         self.indexProcess()
     def indexProcess(self):
@@ -460,10 +460,13 @@ class GUI(Tk):
                                 outputFile = ref[0] + '.' + newitem
                                 array[array.index(item)] = outputFile
 
-                        self.runningTool = Label(self, text=array[0] + ' ' + array[1])
-                        self.runningTool.place(x=10, y=50+ index*20)
+                        self.runningTool = Label(self.indexing, text=tool[0])
+                        self.runningTool.place(x=10, y=50 + index * 20)
+                        self.progressInfo = Label(self.indexing, text='Running')
+                        self.progressInfo.place(x=300, y=50 + index * 20)
                         #returnCode = subprocess.call(array)
                         #print(returnCode)
+                        self.progressInfo.configure(text='Done')
                         print(array)
 
     """Add tool functions"""
