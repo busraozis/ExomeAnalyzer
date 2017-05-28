@@ -63,6 +63,7 @@ class GUI(Tk):
                 array = line.split()
                 if(array[0] == 'level'):
                     level = array[1]
+                    self.levelNumber = int(level)
                 elif (array[0] == 'end'):
                     toolInfo.append(indexArray)
                     toolInfo.append(commandArray)
@@ -689,7 +690,7 @@ class GUI(Tk):
         saveButton.place(x=10, y=80)
     def writeIndexCommand(self, level, number):
         newCommand = self.enterCommand1.get()
-        self.dict[level][number][1].append(newCommand+"\n")
+        self.dict[level][number][1].append(newCommand)
 
         with open(self.commandFile, 'w') as file:
             for level in range(1,self.levelNumber+1):
@@ -710,7 +711,7 @@ class GUI(Tk):
         self.updateTool()
     def writeCommand(self, level, number):
         newCommand = self.enterCommand.get()
-        self.dict[level][number][2].append(newCommand+"\n")
+        self.dict[level][number][2].append(newCommand)
 
         with open(self.commandFile, 'w') as file:
             for level in range(1,self.levelNumber+1):
