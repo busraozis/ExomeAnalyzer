@@ -327,10 +327,10 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        #returnCode = subprocess.getoutput(array)
-                        returnCode = str(array)
+                        returnCode = subprocess.getoutput(array)
+                        #returnCode = str(array)
 
-                        if returnCode.find('Error') != -1:
+                        if returnCode.find('Err') != -1:
                             self.popup = Tk()
                             self.popup.title("Warning!")
                             self.popup.geometry("400x100")
@@ -464,7 +464,7 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.indexing, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        #returnCode = subprocess.call(array)
+                        returnCode = subprocess.call(array)
                         #print(returnCode)
                         self.progressInfo.configure(text='Done')
                         print(array)
