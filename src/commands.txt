@@ -1,6 +1,5 @@
 level 1
 Fastqc
-index:
 fastqc {fastq} {fastq}
 end
 end-of-level
@@ -27,16 +26,10 @@ index: samtools faidx {fa}
 ./samtools index {bam}
 end
 Gatk
-index:
 java -jar GenomeAnalysisTK.jar -T BaseRecalibator -R {fasta} -I {bam} -knownSites {vcf} -knownSites {vcf} -o [table]
 end
 end-of-level
 level 5
 Annovar
-end
-end-of-level
-level 6
-SNPChecker
-java -jar SNPChecker1.jar
 end
 end-of-level
