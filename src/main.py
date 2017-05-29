@@ -470,7 +470,6 @@ class GUI(Tk):
                         returnCode = subprocess.call(array)
                         #print(returnCode)
                         self.progressInfo.configure(text='Done')
-                        print(array)
 
     """Add tool functions"""
     def addToolScreen(self):
@@ -586,7 +585,6 @@ class GUI(Tk):
             self.number = -1
             for i in item:
                 self.number += 1
-                print(i.get())
                 if (i.get() == 1):
                     self.updatedToolName = self.dict[self.level][self.number][0]
                     self.updatedToolLevel = self.level
@@ -639,7 +637,6 @@ class GUI(Tk):
                 for commands in self.updatedToolCommands:
                     if(not commands== ''):
                         self.commands.append(Label(self, text=self.updatedToolCommands[j]))
-                        print(len(self.updatedToolCommands[j]))
                         self.commands[j].place(x=250, y=90 + i * (j+2) * 30)
                         self.increaseOrdCommand.append(Button(self, text="\u25B2", bg="#ffe7b5", width=1, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrder(j,updatedToolLevel, n)))
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
@@ -886,7 +883,6 @@ class GUI(Tk):
             number = -1
             for i in item:
                 number += 1
-                print(i.get())
                 if (i.get() == 1):
                     array = self.dict[level]
                     del self.dict[level]
