@@ -13,10 +13,9 @@ class GUI(Tk):
     checkboxes = []
     checkboxes2 = []
     checkboxesForIndex = []
-    reference = None
 
     tools = []
-    levelNumber = 6
+    levelNumber = 5
     dict = {}
 
     def __init__(self,master=None):
@@ -193,11 +192,11 @@ class GUI(Tk):
             for item in self.dict[key] :
                 index += 1
                 var = IntVar()
-                #if len(self.dict[key]) == 1 and key != 1  and key != 6:
-                    #self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
-                    #self.cbox1.select()
-                #else :
-                self.cbox1 = Checkbutton(self.labelframe,variable=var)
+                if len(self.dict[key]) == 1 and key != 1  and key != 6:
+                    self.cbox1 = Checkbutton(self.labelframe,state=DISABLED, variable=var)
+                    self.cbox1.select()
+                else :
+                    self.cbox1 = Checkbutton(self.labelframe,variable=var)
 
                 checkboxConditions.append(var)
                 self.cbox1.place(x=250, y=50 + index * 30)
@@ -328,8 +327,8 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        #returnCode = subprocess.getoutput(array)
-                        returnCode = str(array)
+                        returnCode = subprocess.getoutput(array)
+                        #returnCode = str(array)
 
                         if returnCode.find('Err') != -1:
                             self.popup = Tk()
