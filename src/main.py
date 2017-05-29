@@ -324,14 +324,17 @@ class GUI(Tk):
                                     outputFileNumber += 1
                                     array[array.index(item)] = outputFile
 
+                        comm = ' '.join(array)
+
                         self.runningTool = Label(self.progressDialog, text=tool[0])
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        returnCode = subprocess.getoutput(array)
+                        #returnCode = subprocess.getoutput(array)
+                        returnCode = subprocess.check_output(comm, shell=True)
                         #returnCode = str(array)
 
-                        if returnCode.find('Err') != -1:
+                        if b'Err' in returnCode:
                             self.popup = Tk()
                             self.popup.title("Warning!")
                             self.popup.geometry("400x100")
@@ -340,7 +343,7 @@ class GUI(Tk):
                                                  text="Error occured during process.")
                             self.warning.place(x=10, y=20)
                             return
-                        if returnCode.find('Permission') != -1:
+                        if b'Permission'in returnCode:
                             self.popup = Tk()
                             self.popup.title("Warning!")
                             self.popup.geometry("400x100")
@@ -355,9 +358,8 @@ class GUI(Tk):
                             # the next line replaces the currently-running process with the sudo
                             os.execlpe('sudo', *args)
                             return
-                        print(returnCode)
                         self.progressInfo.configure(text='Done')
-                        # print(array)
+
     def ilerle(self):
         self.progressBar["value"] = self.progressBar["value"] + 1
         if self.progressBar["value"] < 100:
