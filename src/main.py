@@ -128,7 +128,7 @@ class GUI(Tk):
 
         self.labelframe = LabelFrame(self, text="Settings")
         self.labelframe.pack(fill="both", expand="yes")
-
+        del self.checkboxes2[:]
         index = 0
 
         for key in self.dict.keys() :
