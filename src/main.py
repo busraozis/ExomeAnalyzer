@@ -690,7 +690,7 @@ class GUI(Tk):
         saveButton.place(x=10, y=80)
     def writeIndexCommand(self, level, number):
         newCommand = self.enterCommand1.get()
-        self.dict[level][number][1].append(newCommand+"\n")
+        self.dict[level][number][1].append(newCommand)
 
         with open(self.commandFile, 'w') as file:
             for level in range(1,self.levelNumber+1):
