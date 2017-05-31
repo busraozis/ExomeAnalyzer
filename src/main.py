@@ -330,17 +330,27 @@ class GUI(Tk):
                         self.runningTool.place(x=10, y=50 + index * 20)
                         self.progressInfo = Label(self.progressDialog, text='Running')
                         self.progressInfo.place(x=300, y=50 + index * 20)
-                        #returnCode = subprocess.getoutput(array)
-                        returnCode = subprocess.check_output(comm, shell=True)
-                        #returnCode = str(array)
 
-                        if b'Err' in returnCode:
+                        try:
+                            subprocess.check_output(comm, shell=True)
+                        except subprocess.CalledProcessError as e:
                             self.popup = Tk()
                             self.popup.title("Warning!")
                             self.popup.geometry("400x100")
                             self.popup.resizable(width=False, height=False)
                             self.warning = Label(self.popup,
                                                  text="Error occured during process.")
+                            self.warning.place(x=10, y=20)
+                            return
+
+
+                        """if b'Err' in returnCode:
+                            self.popup = Tk()
+                            self.popup.title("Warning!")
+                            self.popup.geometry("400x100")
+                            self.popup.resizable(width=False, height=False)
+                            self.warning = Label(self.popup,
+                                                 text="Error occured during process.\n" + returnCode)
                             self.warning.place(x=10, y=20)
                             return
                         if b'Permission'in returnCode:
@@ -357,7 +367,7 @@ class GUI(Tk):
                             args = ['sudo', sys.executable] + sys.argv + [os.environ]
                             # the next line replaces the currently-running process with the sudo
                             os.execlpe('sudo', *args)
-                            return
+                            return"""
                         self.progressInfo.configure(text='Done')
 
     def ilerle(self):
