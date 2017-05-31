@@ -627,7 +627,15 @@ class GUI(Tk):
                 j = 0
                 self.arg.place(x=100, y=90 + i * (j + 1) * 30)
                 for indexCommands in self.updatedToolIndexCommand:
-                    self.indexCommands.append(Label(self, text=self.updatedToolIndexCommand[j]) )     # INDEX COMMAND
+                    if len(self.updatedToolIndexCommand[j]) <= 65:
+                        indexCommandLabel = Label(self, text=self.updatedToolIndexCommand[j])
+                    else:
+                        text = ""
+                        for index2 in range(0, 65):
+                            text = text + self.updatedToolIndexCommand[j][index2]
+                        text = text + " ..."
+                        indexCommandLabel = Label(self, text=text)
+                    self.indexCommands.append(indexCommandLabel)     # INDEX COMMAND
                     self.indexCommands[j].place(x=250, y=90 + i * (j+1) * 30)
                     self.increaseOrdIndex.append(Button(self, text="\u25B2", bg="#ffe7b5", width=1,command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrderIndex(j,updatedToolLevel, n)))
                     self.increaseOrdIndex[j].place(x=600, y=90 + i * (j+1) * 30)
@@ -646,7 +654,15 @@ class GUI(Tk):
                 self.arg.place(x=100, y=90 + i * (j + 1) * lastCommandPosition * 30)
                 for commands in self.updatedToolCommands:
                     if(not commands== ''):
-                        self.commands.append(Label(self, text=self.updatedToolCommands[j]))
+                        if len(self.updatedToolCommands[j]) <= 65:
+                            commandLabel=Label(self, text=self.updatedToolCommands[j])
+                        else:
+                            text = ""
+                            for index1 in range(0,65):
+                                text = text + self.updatedToolCommands[j][index1]
+                            text = text + " ..."
+                            commandLabel=Label(self, text=text)
+                        self.commands.append(commandLabel)
                         self.commands[j].place(x=250, y=90 + i * (j+2) * 30)
                         self.increaseOrdCommand.append(Button(self, text="\u25B2", bg="#ffe7b5", width=1, command=lambda j=j, updatedToolLevel=self.updatedToolLevel, n=self.n: self.increaseOrder(j,updatedToolLevel, n)))
                         self.increaseOrdCommand[j].place(x=600, y=90 + i * (j+2) * 30)
